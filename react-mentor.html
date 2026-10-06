@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>React ও Next.js — মেন্টরের ক্লাস</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #1E1B16;
+      --panel: #26221B;
+      --ink: #F0EAE0;
+      --dim: #B9AF9E;
+      --amber: #E8A33D;
+      --amber-soft: #5b431f;
+      --line: #3a352a;
+      --code: #171410;
+      --react: #61DAFB;
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html {
+      scroll-padding-top: 70px
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Hind Siliguri', sans-serif;
+      line-height: 1.75
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--line);
+      border-radius: 4px
+    }
+
+    /* top bar */
+    .topbar {
+      position: sticky;
+      top: env(safe-area-inset-top, 0px);
+      z-index: 20;
+      background: rgba(30, 27, 22, .9);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--line);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: 1.05rem
+    }
+
+    .brand span {
+      color: var(--amber)
+    }
+
+    .progress-wrap {
+      flex: 1;
+      max-width: 220px;
+      margin-left: 20px;
+      height: 6px;
+      background: var(--line);
+      border-radius: 99px;
+      overflow: hidden
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--amber), var(--react));
+      width: 0%;
+      transition: width .5s ease
+    }
+
+    .menu-btn {
+      display: none;
+      background: none;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 1rem
+    }
+
+    .layout {
+      display: flex;
+      max-width: 1200px;
+      margin: 0 auto
+    }
+
+    nav.side {
+      width: 260px;
+      flex-shrink: 0;
+      padding: 24px 14px;
+      position: sticky;
+      top: 66px;
+      align-self: flex-start;
+      max-height: calc(100vh - 90px);
+      overflow-y: auto
+    }
+
+    nav.side h4 {
+      font-size: .78rem;
+      color: var(--dim);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin: 18px 8px 6px
+    }
+
+    nav.side a {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: .92rem;
+      opacity: .85
+    }
+
+    nav.side a:hover {
+      background: var(--panel)
+    }
+
+    nav.side a.active {
+      background: var(--amber-soft);
+      color: var(--amber);
+      opacity: 1
+    }
+
+    nav.side a.locked {
+      opacity: .4;
+      cursor: default
+    }
+
+    .chk {
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      border: 1.5px solid var(--dim);
+      flex-shrink: 0
+    }
+
+    .chk.done {
+      background: var(--amber);
+      border-color: var(--amber)
+    }
+
+    main {
+      flex: 1;
+      padding: 30px 30px 90px;
+      min-width: 0
+    }
+
+    section.topic {
+      display: none;
+      max-width: 760px
+    }
+
+    section.topic.active {
+      display: block;
+      animation: rise .5s ease
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(10px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .eyebrow {
+      color: var(--amber);
+      font-weight: 600;
+      font-size: .85rem
+    }
+
+    h1 {
+      font-size: 1.9rem;
+      margin: .2em 0 .3em
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      margin: 1.8em 0 .5em;
+      border-left: 4px solid var(--amber);
+      padding-left: 10px
+    }
+
+    p {
+      color: var(--ink)
+    }
+
+    .mentor {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin: 16px 0;
+      position: relative
+    }
+
+    .mentor::before {
+      content: "মেন্টর বলছে";
+      display: block;
+      color: var(--amber);
+      font-weight: 600;
+      font-size: .82rem;
+      margin-bottom: 6px
+    }
+
+    .flow-box {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      margin: 18px 0
+    }
+
+    .flow-row {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line);
+      font-size: .92rem;
+      line-height: 1.65
+    }
+
+    .flow-row:last-child {
+      border-bottom: none
+    }
+
+    .flow-row b {
+      display: block;
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+      margin-bottom: 4px;
+      opacity: .85
+    }
+
+    .flow-row.problem {
+      background: #332222;
+      color: #f0cfc9
+    }
+
+    .flow-row.why {
+      background: #26221B;
+      color: var(--ink)
+    }
+
+    .flow-row.fix {
+      background: #1f2f22;
+      color: #cdeed4
+    }
+
+    .flow-row.where {
+      background: #22262f;
+      color: #cfe0f0
+    }
+
+    pre {
+      background: var(--code);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px 16px;
+      overflow-x: auto;
+      font-family: 'Fira Code', monospace;
+      font-size: .85rem;
+      color: #dcd4c2
+    }
+
+    code {
+      font-family: 'Fira Code', monospace
+    }
+
+    .note {
+      color: var(--dim);
+      font-size: .9rem
+    }
+
+    .done-btn {
+      margin-top: 26px;
+      background: var(--amber);
+      color: #1E1B16;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 99px;
+      font-weight: 600;
+      cursor: pointer
+    }
+
+    .done-btn.on {
+      background: var(--panel);
+      color: var(--amber);
+      border: 1px solid var(--amber)
+    }
+
+    .nav-arrows {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 40px;
+      border-top: 1px solid var(--line);
+      padding-top: 16px
+    }
+
+    .nav-arrows a {
+      color: var(--dim);
+      text-decoration: none;
+      font-size: .9rem
+    }
+
+    /* dom vs virtual dom animation */
+    .dom-demo {
+      display: flex;
+      gap: 16px;
+      margin: 18px 0;
+      flex-wrap: wrap
+    }
+
+    .dom-box {
+      flex: 1;
+      min-width: 220px;
+      background: var(--code);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px
+    }
+
+    .dom-box h5 {
+      margin: 0 0 10px;
+      font-size: .85rem;
+      color: var(--dim)
+    }
+
+    .node {
+      border: 1px dashed #514a3a;
+      border-radius: 6px;
+      padding: 6px 8px;
+      margin: 5px 0;
+      font-size: .8rem
+    }
+
+    .node.flash {
+      animation: flash 1.1s ease infinite
+    }
+
+    @keyframes flash {
+
+      0%,
+      100% {
+        background: transparent;
+        border-color: #514a3a
+      }
+
+      50% {
+        background: #5b431f;
+        border-color: var(--amber)
+      }
+    }
+
+    .demo-btn {
+      margin-top: 8px;
+      background: none;
+      border: 1px solid var(--amber);
+      color: var(--amber);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: .8rem;
+      cursor: pointer
+    }
+
+    @media(max-width:820px) {
+      nav.side {
+        position: fixed;
+        left: 0;
+        top: 60px;
+        bottom: 0;
+        background: var(--bg);
+        width: 78%;
+        max-width: 300px;
+        transform: translateX(-105%);
+        transition: transform .25s ease;
+        box-shadow: 8px 0 24px rgba(0, 0, 0, .4);
+        z-index: 30
+      }
+
+      nav.side.open {
+        transform: translateX(0)
+      }
+
+      .menu-btn {
+        display: block
+      }
+
+      main {
+        padding: 20px 16px 80px
+      }
+
+      .progress-wrap {
+        display: none
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topbar">
+    <button class="menu-btn" onclick="document.querySelector('nav.side').classList.toggle('open')">☰</button>
+    <div class="brand">React<span>.</span>ও Next.js <span>মেন্টর</span></div>
+    <div class="progress-wrap">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <nav class="side" id="sideNav"></nav>
+    <main id="main"></main>
+  </div>
+
+  <script>
+    /* ---------- curriculum data ---------- */
+    const modules = [
+      { id: "intro", label: "ভূমিকা (Introduction)", ready: true },
+      { id: "m1", label: "Module 1 — Fundamentals", ready: true },
+      { id: "m2", label: "Module 2 — Routing ও Forms", ready: true },
+      { id: "m3", label: "Module 3 — HTTP ও Hooks", ready: true },
+      { id: "m4", label: "Module 4 — Context API", ready: true },
+      { id: "m5", label: "Module 5 — Redux", ready: true },
+      { id: "m6", label: "Module 6 — Zustand", ready: true },
+      { id: "m7", label: "Module 7 — Tanstack Query", ready: true },
+      { id: "m8", label: "Module 8 — Next.js (Part ১)", ready: true },
+      { id: "m8b", label: "Module 8 — Auth/CRUD/SEO (Part ২)", ready: true },
+      { id: "m9", label: "Module 9 — AI Text/Chatbot", ready: true },
+      { id: "m10", label: "Module 10 — Final Project", ready: true },
+    ];
+
+    function loadDone() { try { return JSON.parse(localStorage.getItem('rmDone') || '{}') } catch (e) { return {} } }
+    function saveDone(d) { try { localStorage.setItem('rmDone', JSON.stringify(d)) } catch (e) { } }
+    let done = loadDone();
+
+    function renderNav() {
+      const nav = document.getElementById('sideNav');
+      nav.innerHTML = '<h4>কারিকুলাম</h4>' + modules.map(m => {
+        const cls = m.ready ? '' : 'locked';
+        const chk = done[m.id] ? 'chk done' : 'chk';
+        return `<a href="#" class="${cls}" data-id="${m.id}" onclick="go('${m.id}');return false;">
+      <span class="${chk}"></span>${m.label}${m.ready ? '' : ' <span class="note">(শীঘ্রই)</span>'}
+    </a>`;
+      }).join('');
+      updateProgress();
+    }
+    function updateProgress() {
+      const total = modules.length;
+      const cnt = Object.values(done).filter(Boolean).length;
+      document.getElementById('progressBar').style.width = (cnt / total * 100) + '%';
+    }
+    function markActive(id) {
+      document.querySelectorAll('nav.side a').forEach(a => a.classList.toggle('active', a.dataset.id === id));
+    }
+    function go(id) {
+      const m = modules.find(x => x.id === id);
+      if (!m || !m.ready) return;
+      document.querySelectorAll('section.topic').forEach(s => s.classList.remove('active'));
+      document.getElementById('sec-' + id).classList.add('active');
+      markActive(id);
+      document.getElementById('sideNav').classList.remove('open');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    function toggleDone(id, btn) {
+      done[id] = !done[id];
+      saveDone(done);
+      btn.classList.toggle('on', done[id]);
+      btn.textContent = done[id] ? '✓ কমপ্লিট করা হয়েছে' : 'এই টপিক শেষ — Done মার্ক করো';
+      renderNav(); markActive(id);
+    }
+    function runDomDemo() {
+      document.querySelectorAll('.dom-box.real .node').forEach(n => n.classList.add('flash'));
+      setTimeout(() => document.querySelectorAll('.dom-box.real .node').forEach(n => n.classList.remove('flash')), 1300);
+      document.querySelector('.dom-box.virtual .node.changed').classList.add('flash');
+      setTimeout(() => document.querySelector('.dom-box.virtual .node.changed').classList.remove('flash'), 1300);
+    }
+
+    renderNav();
+  </script>
+
+  <div id="main-content" style="display:none"></div>
+
+  <!-- ============ MAIN CONTENT (rendered directly, not via JS string, so it's easy to extend later) ============ -->
+  <script>
+    document.getElementById('main').innerHTML = `
+
+<section class="topic active" id="sec-intro">
+  <div class="eyebrow">ভূমিকা</div>
+  <h1>React কী, আর কেন শিখছি?</h1>
+  <div class="mentor">ধরো তুমি একটা রেস্টুরেন্টের ওয়েটার। প্রতিবার একটা অর্ডার এলে, পুরনো ওয়েটার পুরো টেবিলটাই আবার সাজিয়ে ফেলত — প্লেট, গ্লাস, কাঁটাচামচ সব নতুন করে বসাতো। React হলো সেই স্মার্ট ওয়েটার, যে দেখে নেয় কোন জিনিসটা আসলে বদলেছে (শুধু প্লেটটা), আর শুধু সেইটুকুই বদলায়। এটাই <b>Virtual DOM</b>-এর মূল আইডিয়া।</div>
+
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 React আসার আগে সমস্যা ছিল</b>আগে শুধু plain JavaScript (বা jQuery) দিয়ে ওয়েবসাইটের UI বদলাতে হতো — <code>document.getElementById()</code>, <code>.innerHTML</code> দিয়ে হাতে হাতে DOM ধরে বদলাতে হতো। ছোট সাইটে চলত, কিন্তু বড় অ্যাপে (অনেক বাটন, ফর্ম, লিস্ট) কোড এলোমেলো হয়ে যেত, কোন অংশ কোথায় বদলাচ্ছে ট্র্যাক রাখা কঠিন হয়ে পড়ত।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>UI-র প্রতিটা ছোট অংশ (বাটন, কার্ড, ফর্ম) আলাদা আলাদা জায়গায় কোড লেখা হতো, একই ডিজাইন বারবার কপি-পেস্ট করতে হতো — কোনো "reusable" টুকরো ছিল না। একটা জায়গায় বাগ ঠিক করলে, একই কোড অন্য ৫ জায়গায় আলাদা করে ঠিক করতে হতো।</div>
+    <div class="flow-row fix"><b>✅ React কীভাবে সমাধান করলো</b>React পুরো UI-কে ছোট ছোট, স্বাধীন, পুনর্ব্যবহারযোগ্য "Component"-এ ভেঙে দেয় (Lego ব্লকের মতো), আর ডেটা বদলালে UI নিজে থেকেই আপডেট হয়ে যায় — হাতে করে DOM ধরে বদলাতে হয় না।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে ব্যবহার হয়</b>যেকোনো ওয়েব অ্যাপ যেখানে UI ঘন ঘন বদলায় (ফর্ম, ড্যাশবোর্ড, চ্যাট, ই-কমার্স) — সেখানে React দিয়ে UI-কে Component এ ভেঙে বানানো হয়। নিচের Installation অংশ থেকেই শুরু করছি।</div>
+  </div>
+
+  <h2>React এর মূল বৈশিষ্ট্য</h2>
+  <p>React হলো একটা JavaScript লাইব্রেরি (framework নয়) যেটা দিয়ে আমরা UI বানাই। এর মূল তিনটে জিনিস মনে রাখবে —</p>
+  <ul>
+    <li><b>Component-based</b> — পুরো UI কে ছোট ছোট reusable টুকরোয় (Component) ভাগ করা হয়, যেমন Lego ব্লক দিয়ে বাড়ি বানানো।</li>
+    <li><b>Declarative</b> — তুমি বলো UI কেমন দেখতে হবে, কীভাবে বানাতে হবে সেটা React নিজে বুঝে নেয়।</li>
+    <li><b>Virtual DOM</b> — আসল DOM-এ হাত না দিয়ে, একটা হালকা কপির উপর হিসেব করে শুধু দরকারি অংশটুকু বদলায়।</li>
+  </ul>
+
+  <h2>Real DOM বনাম Virtual DOM — সমস্যাটা আসলে কী ছিল?</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>ব্রাউজারের আসল DOM (Document Object Model) কে বদলানো খুব "ভারী" কাজ — একটা লিস্টের একটা মাত্র আইটেম বদলাতে হলেও পুরনো পদ্ধতিতে অনেক সময় পুরো লিস্টটাই আবার আঁকতে হতো। ওয়েবসাইটে হাজার হাজার আইটেম থাকলে এতে সাইট চোখে দেখার মতো স্লো হয়ে যেত।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>DOM আপডেট করা মানেই ব্রাউজারকে আবার লে-আউট হিসেব করতে হয়, রঙ করতে হয় (repaint) — এটা CPU-র জন্য খরচসাপেক্ষ কাজ। যত বেশিবার ও যত বড় অংশ বদলাবে, তত স্লো হবে।</div>
+    <div class="flow-row fix"><b>✅ React কীভাবে সমাধান করলো</b>React একটা হালকা "নকল" DOM মেমরিতে রাখে (Virtual DOM)। কিছু বদলালে, আগের নকলের সাথে নতুন নকলের তুলনা করে (একে বলে "Diffing") ঠিক কোন কোন অংশ আসলে বদলেছে সেটা বের করে, আর শুধু সেই টুকরোটাই আসল DOM-এ বদলায় — পুরোটা নয়।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে ব্যবহার হয়</b>এটা তোমাকে হাতে করে সেটআপ করতে হয় না — React নিজে থেকেই প্রতিটা <code>useState</code>/props বদলানোর সময় ভেতরে ভেতরে এটা করে। তোমার শুধু জানা দরকার এটা <b>কেন</b> React-কে এত দ্রুত করে তোলে।</div>
+  </div>
+  <p>নিচের বাক্সে ক্লিক করে দেখো — Real DOM (বাঁয়ে) পুরো তালিকাটাই re-render করে (পুরো ফ্ল্যাশ করে), কিন্তু Virtual DOM (ডানে) শুধু যেটা বদলেছে সেটুকুই আপডেট করে।</p>
+  <div class="dom-demo">
+    <div class="dom-box real">
+      <h5>Real DOM (ধরো, পুরনো পদ্ধতি)</h5>
+      <div class="node">🍽️ Item 1</div>
+      <div class="node">🍽️ Item 2</div>
+      <div class="node">🍽️ Item 3 (বদলেছে)</div>
+    </div>
+    <div class="dom-box virtual">
+      <h5>Virtual DOM (React)</h5>
+      <div class="node">🍽️ Item 1</div>
+      <div class="node">🍽️ Item 2</div>
+      <div class="node changed">🍽️ Item 3 (বদলেছে)</div>
+    </div>
+  </div>
+  <button class="demo-btn" onclick="runDomDemo()">▶ চেঞ্জ সিমুলেট করো</button>
+
+  <h2>Installation ও প্রথম অ্যাপ্লিকেশন</h2>
+  <pre><code># Vite দিয়ে React প্রজেক্ট বানানো (industry-তে এখন এটাই বেশি চলে)
+npm create vite@latest my-app -- --template react
+cd my-app
+npm install
+npm run dev</code></pre>
+  <p class="note">CRA (create-react-app) এখন আর maintain হয় না, তাই industry-তে Vite ব্যবহার করাই standard।</p>
+
+  <h2>Angular বনাম React — একনজরে</h2>
+  <p>Angular একটা পুরো <b>framework</b> (batteries included — routing, forms, HTTP সবকিছু বিল্ট-ইন), আর React একটা <b>library</b> — শুধু UI বানানোর জন্য, বাকি সব (routing, state management) আলাদা লাইব্রেরি দিয়ে জোড়া লাগাতে হয়। এই jodano-r flexibility-ই React কে industry-তে এত জনপ্রিয় করেছে।</p>
+
+  <button class="done-btn ${done['intro'] ? 'on' : ''}" onclick="toggleDone('intro', this)">${done['intro'] ? '✓ কমপ্লিট করা হয়েছে' : 'এই টপিক শেষ — Done মার্ক করো'}</button>
+  <div class="nav-arrows"><span></span><a href="#" onclick="go('m1');return false;">পরের টপিক: Module 1 →</a></div>
+</section>
+
+<section class="topic" id="sec-m1">
+  <div class="eyebrow">Module 1</div>
+  <h1>Fundamentals — JSX, State, Events</h1>
+  <div class="mentor">এই মডিউলটাই React-এর ভিত্তি। এখানে যা শিখবে, পুরো কোর্স জুড়ে এটাই বারবার ব্যবহার হবে — তাই এটা নিয়ে তাড়াহুড়ো কোরো না।</div>
+
+  <h2>JSX — HTML নয়, কিন্তু HTML-এর মতো দেখতে</h2>
+  <p>JSX হলো JavaScript-এর ভিতরেই HTML-এর মতো সিনট্যাক্স লেখার একটা উপায়। আসলে এটা কম্পাইল হয়ে <code>React.createElement()</code> কলে পরিণত হয়।</p>
+  <pre><code>function Greeting() {
+  const name = "রাহুল";
+  return (
+    &lt;h1&gt;নমস্কার, {name}! &lt;/h1&gt; {/* এখানে JS variable ব্যবহার হচ্ছে */}
+  );
+}</code></pre>
+
+  <h2>Parent → Child ডেটা পাঠানো (Props)</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>ধরো তোমার ৫টা আলাদা ইউজার কার্ড দেখাতে হবে, প্রতিটায় আলাদা নাম-ছবি। যদি প্রতিটা কার্ডের জন্য আলাদা কম্পোনেন্ট লেখো (UserCard1, UserCard2...) — কোড ৫ গুণ বড় হয়ে যাবে, আর ডিজাইন বদলাতে হলে ৫ জায়গায় বদলাতে হবে।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>একটাই কম্পোনেন্ট বানিয়ে বারবার ব্যবহার করা দরকার, কিন্তু প্রতিবার আলাদা ডেটা (নাম, ছবি) দিয়ে। সমস্যা হলো — Child কম্পোনেন্টের ভেতর থেকে বাইরের ডেটা পাঠানোর কোনো সহজ উপায় দরকার।</div>
+    <div class="flow-row fix"><b>✅ React কীভাবে সমাধান করলো</b>Props দিয়ে Parent কম্পোনেন্ট Child-কে HTML attribute-এর মতো করে ডেটা পাঠাতে পারে। একটাই <code>UserCard</code> কম্পোনেন্ট লিখে, শুধু <code>name</code> প্রপ বদলে বদলে ৫ বার ব্যবহার করা যায়।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে ব্যবহার হয়</b>যেকোনো "রিইউজেবল" কম্পোনেন্টে — কার্ড, লিস্ট আইটেম, বাটন — যেখানে গঠন একই কিন্তু ডেটা আলাদা আলাদা।</div>
+  </div>
+  <p>বাবা যেমন ছেলেকে হাত-খরচ দেয়, ছেলে সেটা পাল্টাতে পারে না, শুধু ব্যবহার করতে পারে — Props ঠিক তেমন। Parent থেকে Child-এ ডেটা যায়, কিন্তু Child সেই props সরাসরি বদলাতে পারে না।</p>
+  <pre><code>function Parent() {
+  return &lt;Child name="রাহুল" /&gt;;
+}
+function Child({ name }) {
+  return &lt;p&gt;হ্যালো, {name}&lt;/p&gt;;
+}</code></pre>
+
+  <h2>State ও useState() — কম্পোনেন্টের নিজস্ব মেমরি</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>ধরো তুমি সাধারণ একটা JS variable রাখলে, <code>let count = 0</code>, আর বাটনে ক্লিক করে <code>count = count + 1</code> করলে — স্ক্রিনে সংখ্যাটা বদলাবে না! কারণ React একবার কম্পোনেন্ট রেন্ডার করে ফেললে, শুধু variable বদলালে তা আবার re-render করে না।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>React-কে "জানাতে" হয় যে ডেটা বদলেছে, UI আবার আঁকার দরকার আছে। সাধারণ variable বদলালে React সেই খবর পায় না — তাই বাইরে থেকে দেখতে UI "পুরনো" থেকে যায়, যদিও ভেতরে variable বদলে গেছে।</div>
+    <div class="flow-row fix"><b>✅ React কীভাবে সমাধান করলো</b><code>useState</code> একটা বিশেষ "trackable" variable বানিয়ে দেয়, আর তার সাথে একটা ফাংশন (<code>setCount</code>) দেয় যেটা দিয়ে মান বদলালে React নিজে থেকেই বুঝে যায় "রি-রেন্ডার দরকার" — আর স্ক্রিন অটোমেটিক আপডেট হয়ে যায়।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে ব্যবহার হয়</b>যেকোনো জায়গায় যেখানে UI-তে এমন কিছু আছে যেটা ইউজারের অ্যাকশনে বদলাবে — কাউন্টার, ফর্ম ইনপুট, টগল বাটন, লিস্টে আইটেম যোগ/বাদ দেওয়া। নিচের কোডে দেখো কীভাবে বসাতে হয়।</div>
+  </div>
+  <pre><code>import { useState } from "react";
+
+function Counter() {
+  const [count, setCount] = useState(0); // [বর্তমান মান, মান বদলানোর ফাংশন]
+  return (
+    &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+      তুমি {count} বার ক্লিক করেছো
+    &lt;/button&gt;
+  );
+}</code></pre>
+  <p class="note">মনে রাখবে: state সরাসরি বদলাবে না (<code>count = count+1</code> লিখো না), সবসময় <code>setCount()</code> ব্যবহার করো — নইলে React বুঝবেই না UI আপডেট করতে হবে।</p>
+
+  <h2>Event Handling</h2>
+  <pre><code>&lt;input onChange={(e) =&gt; console.log(e.target.value)} /&gt;
+&lt;button onClick={handleSubmit}&gt;জমা দাও&lt;/button&gt;</code></pre>
+
+  <h2>Pure Component ও শুধু দরকারে Re-render</h2>
+  <p>একটা কম্পোনেন্ট <b>Pure</b> বলা হয় যখন একই props/state দিলে সে সবসময় একই আউটপুট দেয় — ঠিক গণিতের ফাংশনের মতো। এটা বুঝলে পরে <code>React.memo</code>, <code>useMemo</code> বোঝা সহজ হয়ে যাবে (এগুলো Module 3-এ আসবে)।</p>
+
+  <button class="done-btn ${done['m1'] ? 'on' : ''}" onclick="toggleDone('m1', this)">${done['m1'] ? '✓ কমপ্লিট করা হয়েছে' : 'এই টপিক শেষ — Done মার্ক করো'}</button>
+  <div class="nav-arrows"><a href="#" onclick="go('intro');return false;">← ভূমিকা</a><a href="#" onclick="go('m2');return false;">পরের টপিক: Module 2 →</a></div>
+</section>
+
+<section class="topic" id="sec-m2">
+  <div class="eyebrow">Module 2</div>
+  <h1>Routing, Forms ও Lazy Loading</h1>
+  <div class="mentor">এতক্ষণ আমরা একটাই স্ক্রিন নিয়ে কাজ করছিলাম। বাস্তব অ্যাপে অনেকগুলো পেজ থাকে — Home, Profile, Settings। এই Module-এ শিখবে কীভাবে এক পেজ থেকে আরেক পেজে যাওয়া যায়, আর ইউজারের ফর্ম ডেটা সামলানো যায়।</div>
+
+  <h2>Routing Concept — React Router</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>React দিয়ে একটা কম্পোনেন্ট দেখানো সহজ, কিন্তু বাস্তব অ্যাপে অনেক "পেজ" থাকে — Home, Profile, Settings। ইউজার URL বদলালে ঠিক পেজ দেখাতে হবে, ব্রাউজারের Back/Forward বাটনও কাজ করতে হবে — এসব হাতে করে লেখা কঠিন আর ভুল-প্রবণ।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>React একটা library, ফ্রেমওয়ার্ক নয় (Module ভূমিকায় যা বলেছিলাম মনে আছে?) — তাই routing, URL সামলানো React নিজে থেকে দেয় না।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b><code>react-router-dom</code> লাইব্রেরি URL আর কম্পোনেন্টের মধ্যে একটা "ম্যাপিং" বানিয়ে দেয় — কোন URL-এ কোন কম্পোনেন্ট দেখাবে, সেটা <code>&lt;Route&gt;</code> দিয়ে ডিক্লেয়ার করা যায়, আর ব্রাউজার হিস্ট্রিও নিজে সামলায়।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>যেকোনো multi-page React অ্যাপে (Next.js ছাড়া প্লেইন React ব্যবহার করলে) — যেমন Dashboard, Blog, E-commerce।</div>
+  </div>
+  <pre><code>npm install react-router-dom
+
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+
+function App() {
+  return (
+    &lt;BrowserRouter&gt;
+      &lt;Link to="/profile"&gt;প্রোফাইল&lt;/Link&gt;
+      &lt;Routes&gt;
+        &lt;Route path="/" element={&lt;Home /&gt;} /&gt;
+        &lt;Route path="/profile" element={&lt;Profile /&gt;} /&gt;
+      &lt;/Routes&gt;
+    &lt;/BrowserRouter&gt;
+  );
+}</code></pre>
+
+  <h2>Dynamic Routing — useParams()</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>ই-কমার্স সাইটে ১০০০টা প্রোডাক্ট থাকলে, প্রতিটার জন্য আলাদা <code>&lt;Route path="/product/1"&gt;</code>, <code>/product/2</code>... লেখা অসম্ভব।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>প্রতিটা প্রোডাক্টের URL আলাদা (id ভিন্ন), কিন্তু দেখানোর কম্পোনেন্ট একই — শুধু ডেটা আলাদা। Route সংখ্যা অসীম হয়ে যাবে যদি হার্ডকোড করি।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b>একটা "প্যাটার্ন" রুট বানানো যায়, <code>/product/:id</code> — এখানে <code>:id</code> যেকোনো মান হতে পারে। <code>useParams()</code> হুক দিয়ে URL থেকে আসল মানটা (যেমন "45") তুলে নেওয়া যায়।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>যেকোনো "ডিটেইল পেজ"-এ — প্রোডাক্ট ডিটেইল, ইউজার প্রোফাইল, ব্লগ পোস্ট — যেখানে একই লে-আউট, শুধু ডেটা বদলায়।</div>
+  </div>
+  <pre><code>&lt;Route path="/product/:id" element={&lt;Product /&gt;} /&gt;
+
+import { useParams } from "react-router-dom";
+function Product() {
+  const { id } = useParams(); // URL এ /product/45 গেলে id = "45"
+  return &lt;h2&gt;প্রোডাক্ট নং {id}&lt;/h2&gt;;
+}</code></pre>
+
+  <h2>Lazy Loading — শুধু দরকারি কোড লোড করো</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>ধরো তোমার অ্যাপে ২০টা পেজ আছে। ডিফল্টভাবে সবগুলো পেজের পুরো JS কোড একসাথে প্রথমেই ডাউনলোড হয় — ইউজার হয়তো শুধু Home দেখতে চায়, তবুও বাকি ১৯টা পেজের কোডও লোড হয়ে যায়, সাইট স্লো হয়ে যায়।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>ফাইল সাইজ যত বড়, ডাউনলোড আর প্রসেস করতে তত সময় লাগে — বিশেষ করে স্লো ইন্টারনেটে এটা স্পষ্ট বোঝা যায়।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b><code>lazy()</code> দিয়ে একটা পেজের কোড আলাদা "টুকরোয়" (chunk) ভাগ করা যায়, যেটা তখনই ডাউনলোড হয় যখন ইউজার সত্যিই সেই পেজে যায় — প্রথমেই নয়।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>বড় পেজ, রেয়ারলি-ব্যবহৃত পেজ (যেমন Settings, Admin প্যানেল), বড় লাইব্রেরি (চার্ট, এডিটর) — যেগুলো সবাই সবসময় দেখে না।</div>
+  </div>
+  <pre><code>import { lazy, Suspense } from "react";
+const Profile = lazy(() =&gt; import("./Profile"));
+
+&lt;Suspense fallback={&lt;p&gt;লোড হচ্ছে...&lt;/p&gt;}&gt;
+  &lt;Profile /&gt;
+&lt;/Suspense&gt;</code></pre>
+
+  <h2>ফর্ম হ্যান্ডলিং — React Hook Form + Yup</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>একটা সাইনআপ ফর্মে ৮টা ইনপুট থাকলে, প্রতিটার জন্য আলাদা <code>useState</code> লিখতে হয় (নাম, ইমেইল, পাসওয়ার্ড...), আর প্রতিটার ভ্যালিডেশন (খালি কি না, ইমেইল ঠিক কি না) হাতে করে লিখতে হয় — কোড অনেক বড়, বিশৃঙ্খল হয়ে যায়।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>প্রতিটা কি-স্ট্রোকে <code>useState</code> আপডেট হলে পুরো ফর্ম re-render হয় (পারফরম্যান্স কমে), আর ভ্যালিডেশন রুল প্রতিটা ফিল্ডে আলাদা করে লিখলে ভুল হওয়ার সম্ভাবনা বাড়ে।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b><b>react-hook-form</b> ইনপুটগুলোকে নিজে সামলায় (কম re-render, দ্রুত), আর <b>yup</b> দিয়ে একটা জায়গায় সব ভ্যালিডেশন রুল লেখা যায় — দুটো মিলে ফর্মের কোড অনেক ছোট আর পরিষ্কার হয়ে যায়।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>যেকোনো ফর্মে যেখানে ৩+ ইনপুট আছে আর ভ্যালিডেশন দরকার — সাইনআপ, লগইন, চেকআউট ফর্ম।</div>
+  </div>
+  <pre><code>npm install react-hook-form yup @hookform/resolvers
+
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
+const schema = yup.object({
+  email: yup.string().email("সঠিক ইমেইল দাও").required("ইমেইল আবশ্যক"),
+  age: yup.number().min(18, "১৮ বছরের বেশি হতে হবে"),
+});
+
+function SignupForm() {
+  const { register, handleSubmit, formState: { errors } } =
+    useForm({ resolver: yupResolver(schema) });
+
+  const onSubmit = (data) =&gt; console.log(data);
+
+  return (
+    &lt;form onSubmit={handleSubmit(onSubmit)}&gt;
+      &lt;input {...register("email")} /&gt;
+      &lt;p&gt;{errors.email?.message}&lt;/p&gt;
+      &lt;button type="submit"&gt;জমা দাও&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</code></pre>
+  <p class="note">এখানে <code>register("email")</code> ইনপুটটাকে ফর্মের সাথে "রেজিস্টার" করে দেয় — আলাদা করে <code>onChange</code>/<code>useState</code> লেখার দরকার পড়ে না।</p>
+
+  <h2>Material UI (MUI) — রেডিমেড, স্ট্যান্ডার্ড কম্পোনেন্ট</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>প্রতিটা বাটন, ইনপুট, কার্ড নিজে হাতে CSS দিয়ে ডিজাইন করতে অনেক সময় লাগে, আর প্রতিটা ডেভেলপার আলাদা স্টাইলে বানালে অ্যাপের UI অসামঞ্জস্যপূর্ণ দেখায়।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>বড় টিমে সবাই একই রকম বাটন, ফর্ম, মোডাল বানাতে গেলে সময় নষ্ট হয়, আর ডিজাইন কনসিস্টেন্সি রাখা কঠিন হয়ে পড়ে।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b>Google-এর Material Design অনুযায়ী আগে থেকে বানানো, টেস্ট করা কম্পোনেন্ট (Button, TextField, Dialog) ব্যবহার করা যায় — শুধু import করেই।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>দ্রুত প্রোটোটাইপ, অ্যাডমিন প্যানেল, বা যেকোনো অ্যাপে যেখানে নিজস্ব কাস্টম ডিজাইন সিস্টেমের দরকার নেই।</div>
+  </div>
+  <pre><code>npm install @mui/material @emotion/react @emotion/styled
+
+import Button from "@mui/material/Button";
+&lt;Button variant="contained"&gt;সাবমিট&lt;/Button&gt;</code></pre>
+
+  <button class="done-btn ${done['m2'] ? 'on' : ''}" onclick="toggleDone('m2', this)">${done['m2'] ? '✓ কমপ্লিট করা হয়েছে' : 'এই টপিক শেষ — Done মার্ক করো'}</button>
+  <div class="nav-arrows"><a href="#" onclick="go('m1');return false;">← Module 1</a><a href="#" onclick="go('m3');return false;">পরের টপিক: Module 3 →</a></div>
+</section>
+
+<section class="topic" id="sec-m3">
+  <div class="eyebrow">Module 3</div>
+  <h1>HTTP Requests, Axios Interceptor ও Advanced Hooks</h1>
+  <div class="mentor">এখন পর্যন্ত আমরা যা করেছি সব ফেক ডেটা দিয়ে। আসল অ্যাপে ডেটা আসে সার্ভার থেকে — এই Module-এ সেটা কীভাবে আনবে, আর কীভাবে পারফরম্যান্স অপটিমাইজ করবে শিখবে।</div>
+
+  <h2>HTTP Request হ্যান্ডল করা — Axios</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>React অ্যাপের ডেটা (ইউজার লিস্ট, প্রোডাক্ট) সবসময় হার্ডকোড করে রাখা যায় না — সার্ভার থেকে আনতে হয়। ব্রাউজারের বিল্ট-ইন <code>fetch</code> দিয়ে করা যায়, কিন্তু এতে প্রতিবার JSON parse করতে হয়, error handling লম্বা কোড লাগে।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b><code>fetch</code>-এ নেটওয়ার্ক এরর (যেমন ইন্টারনেট নেই) আর সার্ভার এরর (৪০৪, ৫০০) দুটো আলাদাভাবে ধরতে হয় — কোডে বারবার একই বয়লারপ্লেট লিখতে হয়।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b><b>axios</b> লাইব্রেরি অটোমেটিক JSON parse করে দেয়, error handling সহজ করে, আর <code>.then()</code>/<code>.catch()</code> দিয়ে পরিষ্কার কোড লেখা যায়।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>যেকোনো জায়গায় সার্ভার থেকে ডেটা আনতে বা পাঠাতে হয় — সাধারণত <code>useEffect</code>-এর ভেতরে (Module 2), বা পরে Module 7-এ Tanstack Query-র সাথে।</div>
+  </div>
+  <pre><code>npm install axios
+import axios from "axios";
+
+useEffect(() =&gt; {
+  axios.get("https://api.example.com/users")
+    .then(res =&gt; setUsers(res.data))
+    .catch(err =&gt; console.error(err));
+}, []);</code></pre>
+
+  <h2>Axios Interceptor — প্রতিটা রিকোয়েস্টের "দারোয়ান"</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>ধরো তোমার অ্যাপে ১০০টা জায়গায় API কল হয়, আর প্রতিটাতেই একটা লগইন-টোকেন হেডারে পাঠাতে হবে। প্রতিটা কলে আলাদা করে এই হেডার-কোড লিখতে হলে — একদিন টোকেনের নাম বদলালে ১০০ জায়গায় গিয়ে বদলাতে হবে।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>একই কাজ (টোকেন জোড়া, এরর হ্যান্ডল করা) বারবার প্রতিটা API কলে কপি-পেস্ট করলে কোড রিপিট হয়, আর একটা জায়গায় বদল দরকার হলে সব জায়গায় গিয়ে বদলাতে হয়।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b>একটা "দারোয়ান" (interceptor) বসিয়ে দাও — প্রতিটা রিকোয়েস্ট/রেসপন্স তার হাত দিয়ে যাবে, আর একবার সেখানে কোড লিখলেই সব API কলের জন্য কাজ করবে।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>Authentication টোকেন পাঠানো, প্রতিটা এরর রেসপন্সে অটোমেটিক লগইন পেজে পাঠানো (401 হলে) — এরকম "প্রতিটা রিকোয়েস্টেই দরকার" এমন কাজে।</div>
+  </div>
+  <pre><code>const api = axios.create({ baseURL: "https://api.example.com" });
+
+// প্রতিটা রিকোয়েস্ট যাওয়ার আগে টোকেন জুড়ে দাও
+api.interceptors.request.use((config) =&gt; {
+  const token = localStorage.getItem("token");
+  if (token) config.headers.Authorization = "Bearer " + token;
+  return config;
+});
+
+// প্রতিটা রেসপন্স আসার পর, 401 হলে লগইন পেজে পাঠাও
+api.interceptors.response.use(
+  (response) =&gt; response,
+  (error) =&gt; {
+    if (error.response?.status === 401) window.location.href = "/login";
+    return Promise.reject(error);
+  }
+);</code></pre>
+
+  <h2>Controlled বনাম Uncontrolled Components</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>ইনপুট ফিল্ডে ইউজার টাইপ করলে React-এর কি জানা দরকার প্রতিটা কি-স্ট্রোকে কী টাইপ হলো? সবসময় নয় — মাঝে মাঝে শুধু "সাবমিট" করলেই ভ্যালু পড়লেই চলে। তাহলে প্রতিটা কি-স্ট্রোকে re-render করা কি অতিরিক্ত কাজ?</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>দুটো আলাদা দরকার — কখনো তাৎক্ষণিক ভ্যালিডেশন দরকার (Controlled), কখনো শুধু শেষে একবার মান পড়লেই চলে (Uncontrolled, দ্রুত কিন্তু কম নিয়ন্ত্রণ)।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b><b>Controlled</b>-এ ইনপুটের ভ্যালু <code>useState</code>-এ থাকে, প্রতিটা কি-স্ট্রোকে React জানে। <b>Uncontrolled</b>-এ ব্রাউজার নিজে ভ্যালু ধরে রাখে, <code>useRef</code> দিয়ে দরকারমতো শুধু পড়ে নেওয়া হয় — কোনো re-render ছাড়াই।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>রিয়েল-টাইম ভ্যালিডেশন/সার্চ-বার-এ Controlled; বড় ফর্মে দ্রুততার জন্য Uncontrolled (react-hook-form ভেতরে এটাই করে)।</div>
+  </div>
+  <p><b>Controlled</b> — ইনপুটের ভ্যালু React-এর state-এ থাকে, React-ই "নিয়ন্ত্রণ" করে।</p>
+  <pre><code>const [name, setName] = useState("");
+&lt;input value={name} onChange={(e) =&gt; setName(e.target.value)} /&gt;</code></pre>
+  <p><b>Uncontrolled</b> — ইনপুটের ভ্যালু ব্রাউজার নিজে সামলায়, দরকার হলে <code>useRef</code> দিয়ে শুধু মান পড়ে নেওয়া হয়।</p>
+  <pre><code>const inputRef = useRef();
+&lt;input ref={inputRef} /&gt;
+// পরে দরকার হলে: inputRef.current.value</code></pre>
+  <p class="note">Form validation-এর জন্য Controlled ভালো (প্রতিটা কি-স্ট্রোকে চেক করা যায়), কিন্তু বড় ফর্মে খুব বেশি Controlled input পারফরম্যান্স কমাতে পারে — তাই Module 2-এর react-hook-form ভেতরে ভেতরে Uncontrolled পদ্ধতিই ব্যবহার করে, দ্রুততার জন্য।</p>
+
+  <h2>useRef — DOM-কে সরাসরি ধরার হাতল</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>কখনো কখনো সরাসরি একটা DOM element ধরার দরকার হয় (যেমন পেজ লোড হতেই একটা input-এ অটো-ফোকাস করা), কিন্তু <code>useState</code> ব্যবহার করলে প্রতিবার মান বদলালে অকারণ re-render হয়ে যাবে।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>ফোকাস করা, স্ক্রল পজিশন পড়া, বা আগের রেন্ডারের কোনো মান মনে রাখা — এসব কাজে UI-তে পরিবর্তন দেখানোর দরকার নেই, তাই re-render ট্রিগার করা অপ্রয়োজনীয়।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b><code>useRef</code> এমন একটা "বাক্স" দেয় যার ভেতরের মান বদলালে React re-render করে না — DOM element ধরতে, বা re-render ছাড়াই কোনো মান মনে রাখতে কাজে লাগে।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>অটো-ফোকাস, ভিডিও প্লে/পজ কন্ট্রোল, আগের props/state-এর মান মনে রাখা, Uncontrolled ইনপুট থেকে মান পড়া।</div>
+  </div>
+  <pre><code>const inputRef = useRef(null);
+useEffect(() =&gt; { inputRef.current.focus(); }, []); // পেজ লোড হতেই ইনপুটে ফোকাস
+&lt;input ref={inputRef} /&gt;</code></pre>
+  <p class="note">useRef-এ মান বদলালে কম্পোনেন্ট re-render হয় না — এটা state আর ref-এর সবচেয়ে বড় পার্থক্য।</p>
+
+  <h2>useMemo, useCallback, React.memo — অকারণ কাজ আটকানো</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>ধরো প্রতিবার কম্পোনেন্ট re-render হলেই ১০ হাজার আইটেমের একটা লিস্ট আবার sort হচ্ছে — অথচ লিস্টটা বদলায়নি! অথবা Parent re-render হলেই Child কম্পোনেন্টও আবার render হয়ে যাচ্ছে, যদিও তার props একই আছে।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>ডিফল্টভাবে React-এ Parent re-render হলে তার সব Child-ও re-render হয়, আর প্রতিটা রেন্ডারে সব ক্যালকুলেশন, সব ফাংশন নতুন করে তৈরি হয় — এটা বড় লিস্ট/ভারী হিসেবে পারফরম্যান্স সমস্যা তৈরি করে।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b><code>useMemo</code> একটা ভারী হিসেবের ফলাফল মনে রাখে, <code>useCallback</code> একটা ফাংশন মনে রাখে, আর <code>React.memo</code> পুরো কম্পোনেন্টটাকেই মনে রাখে — যতক্ষণ না dependency/props সত্যিই বদলাচ্ছে, ততক্ষণ আগের ফলাফলই আবার ব্যবহার হয়, নতুন করে কাজ হয় না।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>বড় লিস্ট sort/filter করার সময় (useMemo), Child কম্পোনেন্টে ফাংশন props পাঠানোর সময় (useCallback + React.memo একসাথে) — শুধু তখনই ব্যবহার করো যখন সত্যিই পারফরম্যান্স সমস্যা দেখো, সবজায়গায় নয়।</div>
+  </div>
+  <pre><code>const sortedList = useMemo(() =&gt; {
+  return bigList.sort((a, b) =&gt; a.price - b.price);
+}, [bigList]); // bigList না বদলালে আবার sort হবে না</code></pre>
+
+  <p>useMemo যেমন একটা মান মনে রাখে, useCallback ঠিক তেমনভাবে একটা <b>ফাংশন</b> মনে রাখে — যাতে প্রতিবার re-render এ নতুন ফাংশন তৈরি না হয় (এটা বিশেষ দরকার হয় যখন Child কম্পোনেন্ট <code>React.memo</code> দিয়ে wrap করা থাকে)।</p>
+  <pre><code>const handleClick = useCallback(() =&gt; {
+  console.log("ক্লিক হলো");
+}, []); // dependency খালি মানে ফাংশনটা কখনো নতুন করে বানানো হবে না</code></pre>
+
+  <pre><code>const Child = React.memo(function Child({ name }) {
+  console.log("Child render হলো");
+  return &lt;p&gt;{name}&lt;/p&gt;;
+});
+// Parent re-render হলেও, "name" prop না বদলালে Child আর render হবে না</code></pre>
+  <p class="note">তিনটে একসাথে মনে রাখো — <code>useMemo</code> মান মনে রাখে, <code>useCallback</code> ফাংশন মনে রাখে, <code>React.memo</code> পুরো কম্পোনেন্টকেই মনে রাখে।</p>
+
+  <button class="done-btn ${done['m3'] ? 'on' : ''}" onclick="toggleDone('m3', this)">${done['m3'] ? '✓ কমপ্লিট করা হয়েছে' : 'এই টপিক শেষ — Done মার্ক করো'}</button>
+  <div class="nav-arrows"><a href="#" onclick="go('m2');return false;">← Module 2</a><a href="#" onclick="go('m4');return false;">পরের টপিক: Module 4 →</a></div>
+</section>
+
+<section class="topic" id="sec-m4">
+  <div class="eyebrow">Module 4</div>
+  <h1>Context API ও useReducer</h1>
+  <div class="mentor">এতক্ষণ props দিয়ে data পাঠাচ্ছিলে — বাবা থেকে ছেলে, ছেলে থেকে নাতি। কিন্তু যদি data-টা ৫ লেয়ার নিচে দরকার হয়? প্রতিটা লেয়ারে props চালান করাকে বলে "Prop Drilling" — এটাই এড়ানোর জন্য Context API।</div>
+
+  <h2>Context API ও useContext — সরাসরি "সম্প্রচার"</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>ধরো থিম (dark/light) তথ্যটা App-এর সবচেয়ে উপরে আছে, কিন্তু দরকার ৫ লেয়ার নিচের একটা বাটনে। প্রতিটা মাঝের কম্পোনেন্টে (যারা থিম ব্যবহারই করে না) সেই props চালান করতে হয় — একে বলে "Prop Drilling"।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>মাঝের প্রতিটা কম্পোনেন্টকে অপ্রয়োজনীয়ভাবে props রিসিভ করে পরের লেয়ারে পাঠাতে হয় — কোড বিশৃঙ্খল হয়, আর মাঝে একটা কম্পোনেন্ট বাদ পড়লেই পুরো চেইন ভেঙে যায়।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b>Context API দিয়ে একবার একটা মান "প্রচার" করা যায় — তারপর যেকোনো গভীরের কম্পোনেন্ট <code>useContext</code> দিয়ে সরাসরি সেটা ধরতে পারে, মাঝেরগুলোকে কিছু জানতে হয় না।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>থিম, লগইন ইউজারের তথ্য, ভাষা সেটিং — এমন ডেটা যা পুরো অ্যাপের অনেক জায়গায় দরকার হয়, কিন্তু ঘন ঘন বদলায় না।</div>
+  </div>
+  <pre><code>import { createContext, useContext, useState } from "react";
+
+const ThemeContext = createContext();
+
+function App() {
+  const [theme, setTheme] = useState("dark");
+  return (
+    &lt;ThemeContext.Provider value={{ theme, setTheme }}&gt;
+      &lt;Toolbar /&gt;
+    &lt;/ThemeContext.Provider&gt;
+  );
+}
+
+function Toolbar() {
+  return &lt;DeepButton /&gt;; // মাঝে props পাঠানোর দরকার নেই
+}
+
+function DeepButton() {
+  const { theme, setTheme } = useContext(ThemeContext); // সরাসরি ধরে নিলো
+  return &lt;button onClick={() =&gt; setTheme("light")}&gt;থিম: {theme}&lt;/button&gt;;
+}</code></pre>
+  <p class="note">Context ছোট-মাঝারি অ্যাপে ভালো কাজ করে (থিম, লগইন ইউজার ইনফো)। কিন্তু বড়, জটিল state-এর জন্য Module 5-এ আসা Redux বেশি উপযুক্ত — কারণ Context বদলালে তার আন্ডারে থাকা সব কম্পোনেন্ট re-render হয়।</p>
+
+  <h2>useReducer — জটিল State-এর জন্য নিয়ম-কানুন</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>state যদি হয় একগুচ্ছ জিনিস (যেমন cart items, quantity, total), আর অনেক রকম action-এ বদলায় (add, remove, update quantity) — তখন একাধিক <code>useState</code> দিয়ে কোড ছড়িয়ে-ছিটিয়ে যায়, কোনটা কোথায় বদলাচ্ছে ট্র্যাক রাখা কঠিন হয়ে যায়।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>একাধিক related state আলাদা আলাদা <code>useState</code>-এ থাকলে, একটা action-এ একসাথে কয়েকটা state আপডেট করতে গেলে কোড অগোছালো আর বাগ-প্রবণ হয়ে যায়।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b><code>useReducer</code> একটা "নিয়মবই" (reducer ফাংশন) বানিয়ে দেয় — কোন action এলে state কীভাবে বদলাবে, সব একজায়গায় লেখা থাকে। state সরাসরি বদলানো হয় না, বরং একটা "action" <code>dispatch</code> করা হয়।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>শপিং কার্ট, মাল্টি-স্টেপ ফর্ম, বা যেকোনো state যেখানে একাধিক related মান একসাথে, নিয়ম মেনে বদলাতে হয়।</div>
+  </div>
+  <pre><code>function reducer(state, action) {
+  switch (action.type) {
+    case "increment": return { count: state.count + 1 };
+    case "decrement": return { count: state.count - 1 };
+    case "reset": return { count: 0 };
+    default: return state;
+  }
+}
+
+function Counter() {
+  const [state, dispatch] = useReducer(reducer, { count: 0 });
+  return (
+    &lt;&gt;
+      &lt;p&gt;গণনা: {state.count}&lt;/p&gt;
+      &lt;button onClick={() =&gt; dispatch({ type: "increment" })}&gt;+&lt;/button&gt;
+      &lt;button onClick={() =&gt; dispatch({ type: "decrement" })}&gt;-&lt;/button&gt;
+    &lt;/&gt;
+  );
+}</code></pre>
+  <p class="note">লক্ষ্য করো — এখানে সরাসরি state বদলানো হয় না, বরং একটা "action" পাঠানো হয় (<code>dispatch</code>), আর reducer ফাংশন ঠিক করে দেয় নতুন state কী হবে। এই প্যাটার্নটাই Module 5-এর Redux-এ হুবহু ব্যবহার হবে — তাই এটা ভালোভাবে বুঝে রাখো।</p>
+
+  <h2>useContext ও useReducer একসাথে — "Mini Redux"</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>useReducer একটা কম্পোনেন্টের ভেতরেই state manage করে — কিন্তু সেই state যদি পুরো অ্যাপের অনেক জায়গা থেকে দরকার হয় (যেমন কার্ট, যেকোনো পেজ থেকে "কার্টে যোগ করো" বাটন)?</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>শুধু useReducer দিয়ে state যেই কম্পোনেন্টে থাকে, সেখান থেকেই দরকার, বাইরে থেকে অ্যাক্সেস করা যায় না — আবার সেই একই prop drilling সমস্যায় ফিরে যেতে হয়।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b>useReducer-এর state আর dispatch-কে Context-এ রেখে দিলে, পুরো অ্যাপের যেকোনো জায়গা থেকে prop drilling ছাড়াই জটিল state manage করা যায় — অনেকটা নিজে হাতে বানানো ছোট Redux।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>মাঝারি সাইজের অ্যাপে যেখানে Redux বসানো "বেশি" মনে হয়, কিন্তু শুধু Context/useState-এও চলবে না — যেমন শপিং কার্ট পুরো অ্যাপ জুড়ে।</div>
+  </div>
+  <p>দুটো একসাথে জুড়ে দিলে, প্রপ-ড্রিলিং ছাড়াই পুরো অ্যাপের যেকোনো জায়গা থেকে জটিল state manage করা যায় — অনেকটা নিজে হাতে বানানো ছোট Redux।</p>
+  <pre><code>const CartContext = createContext();
+
+function CartProvider({ children }) {
+  const [state, dispatch] = useReducer(reducer, { items: [] });
+  return (
+    &lt;CartContext.Provider value={{ state, dispatch }}&gt;
+      {children}
+    &lt;/CartContext.Provider&gt;
+  );
+}
+
+// যেকোনো গভীরের কম্পোনেন্টে:
+function AddToCartButton({ product }) {
+  const { dispatch } = useContext(CartContext);
+  return (
+    &lt;button onClick={() =&gt; dispatch({ type: "add", payload: product })}&gt;
+      কার্টে যোগ করো
+    &lt;/button&gt;
+  );
+}</code></pre>
+
+  <button class="done-btn ${done['m4'] ? 'on' : ''}" onclick="toggleDone('m4', this)">${done['m4'] ? '✓ কমপ্লিট করা হয়েছে' : 'এই টপিক শেষ — Done মার্ক করো'}</button>
+  <div class="nav-arrows"><a href="#" onclick="go('m3');return false;">← Module 3</a><a href="#" onclick="go('m5');return false;">পরের টপিক: Module 5 →</a></div>
+</section>
+
+<section class="topic" id="sec-m5">
+  <div class="eyebrow">Module 5</div>
+  <h1>Redux — কেন্দ্রীয় State Management</h1>
+  <div class="mentor">Module 4-এ Context + useReducer দিয়ে যেটা হাতে বানালে, Redux ঠিক সেই আইডিয়াটাই — কিন্তু আরও শক্তিশালী, আরও structured টুল দিয়ে। বড় অ্যাপে (যেখানে অনেক টিম, অনেক কম্পোনেন্ট একই data নিয়ে কাজ করে) Redux industry-standard।</div>
+
+  <h2>Redux-এর ধারণা — একটাই "সত্যের উৎস"</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>Module 4-এ Context + useReducer দিয়ে নিজে হাতে "mini Redux" বানিয়েছিলে — কিন্তু বড় অ্যাপে, অনেক টিম, অনেক ফাইলে একই প্যাটার্ন প্রতিবার হাতে বানালে standardization থাকে না, বড় হলে debug করাও কঠিন হয়ে যায়।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>টিমের একেকজন একেকভাবে state manage করলে কোড রিভিউ, নতুন ডেভেলপার অনবোর্ড করা কঠিন হয়ে যায় — সবার জন্য একটা common, প্রমাণিত standard দরকার।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b>Redux পুরো অ্যাপের জন্য একটাই কেন্দ্রীয় "store" রাখে, আর সেটা বদলানোর একমাত্র উপায় একটা "action" dispatch করা — এটা একটা industry-wide standardized প্যাটার্ন, যা debugging টুল (Redux DevTools) দিয়ে সহজে ট্র্যাকও করা যায়।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>বড়, জটিল অ্যাপ যেখানে অনেক কম্পোনেন্ট একই data শেয়ার করে, বড় টিম কাজ করে, আর predictable, debuggable state দরকার।</div>
+  </div>
+  <p>Redux-এর মূল কথা: পুরো অ্যাপের জন্য একটাই কেন্দ্রীয় "store" (একটা বড় ভান্ডার) থাকবে, আর সেটা বদলানোর একমাত্র উপায় হলো একটা "action" পাঠানো (dispatch করা)। কোনো কম্পোনেন্ট সরাসরি store বদলাতে পারে না — অনেকটা ব্যাংকের মতো, তুমি সরাসরি ভল্টে ঢুকতে পারো না, একটা "withdrawal request" (action) জমা দিতে হয়।</p>
+  <ol>
+    <li><b>Store</b> — পুরো অ্যাপের state এক জায়গায় থাকে।</li>
+    <li><b>Action</b> — কী ঘটেছে তার বর্ণনা (যেমন <code>{ type: "cart/add" }</code>)।</li>
+    <li><b>Reducer</b> — action অনুযায়ী পুরনো state থেকে নতুন state বানায়।</li>
+  </ol>
+
+  <h2>Setup ও Core Usage (আধুনিক পদ্ধতি — Redux Toolkit দিয়ে)</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>পুরনো "raw Redux"-এ একটা সাধারণ কাউন্টার বানাতেও action type constant, action creator, reducer, store — অনেক আলাদা ফাইল আর অনেক boilerplate কোড লিখতে হতো।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>এত বেশি বয়লারপ্লেটের কারণে ছোট একটা ফিচার যোগ করতেও অনেক সময় লাগত, আর ভুল হওয়ার সম্ভাবনাও বেশি ছিল।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b><b>Redux Toolkit (RTK)</b> — Redux-এরই অফিশিয়াল, আধুনিক পদ্ধতি — <code>createSlice</code> দিয়ে action আর reducer একসাথে, অনেক কম কোডে লেখা যায়।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>এখন industry-তে raw Redux আর প্রায় ব্যবহার হয় না — সবসময় RTK দিয়েই শুরু করা হয়, যেমন নিচে দেখানো হচ্ছে।</div>
+  </div>
+  <p class="note">তাই "Core Usage" আর "Redux Toolkit" দুটো টপিক একসাথেই শেখাচ্ছি, যেটাই আসল বাস্তব-জীবনের পদ্ধতি।</p>
+  <pre><code>npm install @reduxjs/toolkit react-redux</code></pre>
+
+  <p><b>ধাপ ১ — একটা "Slice" বানাও</b> (state-এর একটা অংশ, নিজের reducer + action সহ):</p>
+  <pre><code>// features/counterSlice.js
+import { createSlice } from "@reduxjs/toolkit";
+
+const counterSlice = createSlice({
+  name: "counter",
+  initialState: { value: 0 },
+  reducers: {
+    increment: (state) =&gt; { state.value += 1; }, // RTK-তে সরাসরি বদলানো "মনে হয়", ভেতরে immutable-ই থাকে
+    decrement: (state) =&gt; { state.value -= 1; },
+    addBy: (state, action) =&gt; { state.value += action.payload; },
+  },
+});
+
+export const { increment, decrement, addBy } = counterSlice.actions;
+export default counterSlice.reducer;</code></pre>
+
+  <p><b>ধাপ ২ — Store বানাও</b>:</p>
+  <pre><code>// app/store.js
+import { configureStore } from "@reduxjs/toolkit";
+import counterReducer from "../features/counterSlice";
+
+export const store = configureStore({
+  reducer: { counter: counterReducer },
+});</code></pre>
+
+  <p><b>ধাপ ৩ — পুরো অ্যাপকে Store দিয়ে "মুড়ে" দাও</b>:</p>
+  <pre><code>// main.jsx
+import { Provider } from "react-redux";
+import { store } from "./app/store";
+
+&lt;Provider store={store}&gt;
+  &lt;App /&gt;
+&lt;/Provider&gt;</code></pre>
+
+  <p><b>ধাপ ৪ — যেকোনো কম্পোনেন্ট থেকে ব্যবহার করো</b>:</p>
+  <pre><code>import { useSelector, useDispatch } from "react-redux";
+import { increment, decrement } from "../features/counterSlice";
+
+function Counter() {
+  const count = useSelector((state) =&gt; state.counter.value); // state পড়া
+  const dispatch = useDispatch(); // action পাঠানো
+
+  return (
+    &lt;&gt;
+      &lt;p&gt;গণনা: {count}&lt;/p&gt;
+      &lt;button onClick={() =&gt; dispatch(increment())}&gt;+&lt;/button&gt;
+      &lt;button onClick={() =&gt; dispatch(decrement())}&gt;-&lt;/button&gt;
+    &lt;/&gt;
+  );
+}</code></pre>
+
+  <h2>Advanced State Handling — Async কাজ (API কল) Redux দিয়ে</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>reducer ফাংশনের ভেতর সরাসরি API কল করা যায় না — reducer সবসময় "pure" হতে হয় (একই ইনপুটে সবসময় একই আউটপুট, কোনো সাইড-এফেক্ট নয়), কিন্তু API কল একটা সাইড-এফেক্ট।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>API কল async (সময় লাগে, রেজাল্ট পরে আসে), আর ফলাফলে error/loading/success — তিন রকম অবস্থা হতে পারে। এই জটিলতা reducer-এর সাধারণ "sync" কাঠামোতে ফিট করে না।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b>RTK দেয় <code>createAsyncThunk</code> — এটা একটা "মিডলম্যান" যে আগে API কল করে, তারপর ফলাফল অনুযায়ী (pending/fulfilled/rejected) আলাদা action পাঠায়, যেগুলো reducer সাধারণভাবেই handle করতে পারে।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>Redux দিয়ে ম্যানেজ করা যেকোনো state-এ যেখানে ডেটা সার্ভার থেকে আনতে হয় — যেমন ইউজার লিস্ট, প্রোডাক্ট ক্যাটালগ।</div>
+  </div>
+  <pre><code>import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
+
+export const fetchUsers = createAsyncThunk("users/fetch", async () =&gt; {
+  const res = await axios.get("/api/users");
+  return res.data;
+});
+
+const userSlice = createSlice({
+  name: "users",
+  initialState: { list: [], status: "idle" },
+  reducers: {},
+  extraReducers: (builder) =&gt; {
+    builder
+      .addCase(fetchUsers.pending, (state) =&gt; { state.status = "loading"; })
+      .addCase(fetchUsers.fulfilled, (state, action) =&gt; {
+        state.status = "done";
+        state.list = action.payload;
+      })
+      .addCase(fetchUsers.rejected, (state) =&gt; { state.status = "error"; });
+  },
+});
+export default userSlice.reducer;</code></pre>
+  <p class="note">এই <code>pending → fulfilled/rejected</code> তিনটে অবস্থা মনে রাখো — লোডিং স্পিনার, এরর মেসেজ দেখানোর জন্য এটাই standard প্যাটার্ন। এই একই "loading/data/error" ধারণা Module 7-এর Tanstack Query-তে আরও সহজভাবে পাবে।</p>
+
+  <button class="done-btn ${done['m5'] ? 'on' : ''}" onclick="toggleDone('m5', this)">${done['m5'] ? '✓ কমপ্লিট করা হয়েছে' : 'এই টপিক শেষ — Done মার্ক করো'}</button>
+  <div class="nav-arrows"><a href="#" onclick="go('m4');return false;">← Module 4</a><a href="#" onclick="go('m6');return false;">পরের টপিক: Module 6 →</a></div>
+</section>
+
+<section class="topic" id="sec-m6">
+  <div class="eyebrow">Module 6</div>
+  <h1>Zustand — হালকা, ঝামেলাহীন State Management</h1>
+  <div class="mentor">Redux শক্তিশালী, কিন্তু ছোট-মাঝারি প্রজেক্টে slice, store, provider — এত সব সেটআপ অনেক সময় "বেশি" মনে হয়। Zustand হলো সেই বন্ধু যে বলে — "এত ফর্মালিটির দরকার নেই, চলো সহজ করে দিই।"</div>
+
+  <h2>Zustand-এর ধারণা</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>Redux শক্তিশালী, কিন্তু ছোট-মাঝারি প্রজেক্টে slice, store configuration, Provider দিয়ে পুরো App মোড়া — এত সব সেটআপ ধাপ একটা ছোট প্রজেক্টের জন্য অনেক সময়ই "বেশি" মনে হয়।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>ছোট টিম, দ্রুত প্রোটোটাইপ, বা মাঝারি সাইজের অ্যাপে Redux-এর পুরো boilerplate (এমনকি RTK দিয়েও) ফেলে দেওয়ার মতো সময় নষ্ট মনে হতে পারে।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b>Zustand-এ কোনো <code>Provider</code> লাগে না, কোনো action/reducer আলাদা করে লিখতে হয় না — একটাই ফাংশনে state আর সেটা বদলানোর ফাংশন একসাথে লেখা হয়, আর যেকোনো কম্পোনেন্ট থেকে সরাসরি হুক দিয়ে ব্যবহার করা যায়।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>ছোট-মাঝারি প্রজেক্ট, প্রোটোটাইপ, ছোট টিম — যেখানে দ্রুত সেটআপ দরকার, কিন্তু Context+useReducer-এর চেয়ে বেশি সুবিধা চাও।</div>
+  </div>
+  <p>Zustand-এ কোনো <code>Provider</code> লাগে না, কোনো action/reducer আলাদা করে লিখতে হয় না — একটাই ফাংশনে state আর সেটা বদলানোর ফাংশন একসাথে লেখা হয়।</p>
+  <pre><code>npm install zustand
+
+// store/useCounterStore.js
+import { create } from "zustand";
+
+const useCounterStore = create((set) =&gt; ({
+  count: 0,
+  increment: () =&gt; set((state) =&gt; ({ count: state.count + 1 })),
+  decrement: () =&gt; set((state) =&gt; ({ count: state.count - 1 })),
+  reset: () =&gt; set({ count: 0 }),
+}));
+
+export default useCounterStore;</code></pre>
+  <pre><code>// যেকোনো কম্পোনেন্টে — কোনো Provider ছাড়াই!
+function Counter() {
+  const { count, increment, decrement } = useCounterStore();
+  return (
+    &lt;&gt;
+      &lt;p&gt;গণনা: {count}&lt;/p&gt;
+      &lt;button onClick={increment}&gt;+&lt;/button&gt;
+      &lt;button onClick={decrement}&gt;-&lt;/button&gt;
+    &lt;/&gt;
+  );
+}</code></pre>
+  <p class="note">লক্ষ্য করো: Redux-এ Provider দিয়ে পুরো App মুড়তে হয়, Zustand-এ সেটার দরকারই নেই — এটাই এর সবচেয়ে বড় সুবিধা। ছোট-মাঝারি প্রজেক্ট, প্রোটোটাইপ বা যেখানে টিম ছোট, সেখানে ইন্ডাস্ট্রিতে এখন Zustand খুব জনপ্রিয়।</p>
+
+  <h2>প্রজেক্ট: Zustand দিয়ে একটা Blog অ্যাপ</h2>
+  <div class="mentor">এবার হাতে-কলমে করি। একটা ব্লগ অ্যাপ বানাবো — যেখানে পোস্ট লিস্ট, নতুন পোস্ট যোগ করা, আর ডিলিট করা যাবে, সবকিছুর state Zustand দিয়ে সামলানো হবে। ধাপে ধাপে করো, একটাও স্কিপ কোরো না।</div>
+
+  <p><b>ধাপ ১ — Blog Store বানাও</b></p>
+  <pre><code>// store/useBlogStore.js
+import { create } from "zustand";
+
+const useBlogStore = create((set) =&gt; ({
+  posts: [
+    { id: 1, title: "React শেখার প্রথম দিন", content: "আজ JSX শিখলাম..." },
+  ],
+  addPost: (title, content) =&gt;
+    set((state) =&gt; ({
+      posts: [...state.posts, { id: Date.now(), title, content }],
+    })),
+  deletePost: (id) =&gt;
+    set((state) =&gt; ({
+      posts: state.posts.filter((p) =&gt; p.id !== id),
+    })),
+}));
+
+export default useBlogStore;</code></pre>
+
+  <p><b>ধাপ ২ — পোস্ট লেখার ফর্ম কম্পোনেন্ট</b></p>
+  <pre><code>// components/PostForm.jsx
+import { useState } from "react";
+import useBlogStore from "../store/useBlogStore";
+
+function PostForm() {
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const addPost = useBlogStore((state) =&gt; state.addPost); // শুধু দরকারি ফাংশনটাই নাও
+
+  const handleSubmit = (e) =&gt; {
+    e.preventDefault();
+    if (!title.trim()) return;
+    addPost(title, content);
+    setTitle(""); setContent("");
+  };
+
+  return (
+    &lt;form onSubmit={handleSubmit}&gt;
+      &lt;input value={title} onChange={(e) =&gt; setTitle(e.target.value)} placeholder="শিরোনাম" /&gt;
+      &lt;textarea value={content} onChange={(e) =&gt; setContent(e.target.value)} placeholder="লেখা" /&gt;
+      &lt;button type="submit"&gt;পোস্ট করো&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}
+export default PostForm;</code></pre>
+  <p class="note">এখানে <code>useBlogStore((state) =&gt; state.addPost)</code> — এভাবে "selector" ব্যবহার করলে, শুধু <code>addPost</code> বদলালেই এই কম্পোনেন্ট re-render হবে, পুরো store বদলালে নয়। এটাই পারফরম্যান্সের জন্য ভালো অভ্যাস।</p>
+
+  <p><b>ধাপ ৩ — পোস্ট লিস্ট কম্পোনেন্ট</b></p>
+  <pre><code>// components/PostList.jsx
+import useBlogStore from "../store/useBlogStore";
+
+function PostList() {
+  const posts = useBlogStore((state) =&gt; state.posts);
+  const deletePost = useBlogStore((state) =&gt; state.deletePost);
+
+  return (
+    &lt;div&gt;
+      {posts.map((post) =&gt; (
+        &lt;div key={post.id}&gt;
+          &lt;h3&gt;{post.title}&lt;/h3&gt;
+          &lt;p&gt;{post.content}&lt;/p&gt;
+          &lt;button onClick={() =&gt; deletePost(post.id)}&gt;ডিলিট&lt;/button&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  );
+}
+export default PostList;</code></pre>
+
+  <p><b>ধাপ ৪ — App-এ জোড়া লাগাও</b></p>
+  <pre><code>// App.jsx
+import PostForm from "./components/PostForm";
+import PostList from "./components/PostList";
+
+function App() {
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;আমার ব্লগ&lt;/h1&gt;
+      &lt;PostForm /&gt;
+      &lt;PostList /&gt;
+    &lt;/div&gt;
+  );
+}
+export default App;</code></pre>
+  <p class="note">খেয়াল করো — কোথাও <code>&lt;Provider&gt;</code> লাগেনি, অথচ <code>PostForm</code> আর <code>PostList</code> দুটো আলাদা কম্পোনেন্ট একই state শেয়ার করছে। এটাই Zustand-এর আসল জাদু।</p>
+
+  <button class="done-btn ${done['m6'] ? 'on' : ''}" onclick="toggleDone('m6', this)">${done['m6'] ? '✓ কমপ্লিট করা হয়েছে' : 'এই টপিক শেষ — Done মার্ক করো'}</button>
+  <div class="nav-arrows"><a href="#" onclick="go('m5');return false;">← Module 5</a><a href="#" onclick="go('m7');return false;">পরের টপিক: Module 7 →</a></div>
+</section>
+
+<section class="topic" id="sec-m7">
+  <div class="eyebrow">Module 7</div>
+  <h1>Tanstack Query — Server State-এর মাস্টার</h1>
+  <div class="mentor">Module 5-এ Redux দিয়ে API ডেটা আনতে গিয়ে দেখলে কত কোড লাগে — pending, fulfilled, rejected, লোডিং state, ক্যাশিং সব হাতে করে লিখতে হয়। Tanstack Query (আগে React Query নামে পরিচিত) এই পুরো ঝামেলাটাই এক লাইনে সমাধান করে দেয়।</div>
+
+  <h2>Tanstack Query কী, আর কেন দরকার</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>Module 5-এ দেখলে, শুধু API ডেটা আনার জন্যই <code>createAsyncThunk</code>, pending/fulfilled/rejected তিনটে case, একটা পুরো slice লিখতে হয়েছিল — শুধু একটা লিস্ট দেখানোর জন্য অনেক কোড!</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>Redux/Zustand আসলে বানানো হয়েছিল <b>Client State</b> (মোডাল খোলা কি না, থিম কী) সামলানোর জন্য। কিন্তু <b>Server State</b> (API থেকে আসা ডেটা) সম্পূর্ণ আলাদা সমস্যা — এটা পুরনো হয়ে যায়, ক্যাশ করা দরকার, বারবার আনার দরকার নেই — এই বিশেষ চাহিদাগুলো সাধারণ state ম্যানেজার সামলাতে পারে না ভালোভাবে।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b>Tanstack Query বিশেষভাবে Server State-এর জন্যই বানানো — loading/error/caching সব বিল্ট-ইন, মাত্র একটা হুক কলেই।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>যেকোনো জায়গায় API থেকে ডেটা আনতে হয় — Redux/Zustand-এর পাশাপাশি একসাথেও ব্যবহার করা যায় (client state আলাদা, server state আলাদা)।</div>
+  </div>
+  <pre><code>npm install @tanstack/react-query
+
+// main.jsx
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
+
+&lt;QueryClientProvider client={queryClient}&gt;
+  &lt;App /&gt;
+&lt;/QueryClientProvider&gt;</code></pre>
+
+  <h2>Data Fetching — useQuery</h2>
+  <div class="mentor">Module 3-এ useEffect দিয়ে নিজে হাতে loading/error state বানাতে হতো। useQuery একটা কলেই সেই সব দিয়ে দেয়, আর সাথে ফ্রি-তে ক্যাশিং।</div>
+  <pre><code>import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+
+function Users() {
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["users"],       // এই "key" দিয়েই ক্যাশ চেনে
+    queryFn: () =&gt;
+      axios.get("/api/users").then((res) =&gt; res.data),
+  });
+
+  if (isLoading) return &lt;p&gt;লোড হচ্ছে...&lt;/p&gt;;
+  if (isError) return &lt;p&gt;এরর: {error.message}&lt;/p&gt;;
+
+  return (
+    &lt;ul&gt;
+      {data.map((u) =&gt; &lt;li key={u.id}&gt;{u.name}&lt;/li&gt;)}
+    &lt;/ul&gt;
+  );
+}</code></pre>
+  <p class="note">তুলনা করো Module 5-এর <code>createAsyncThunk</code>-এর সাথে — সেখানে ৩টা case, একটা slice, extraReducers লিখতে হয়েছিল। এখানে useQuery একটা কলেই সব করে দিলো।</p>
+
+  <h2>useMutation — ডেটা বদলানো (POST/PUT/DELETE)</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b><code>useQuery</code> ডেটা "পড়ার" জন্য, কিন্তু নতুন ডেটা তৈরি/আপডেট/ডিলিট করার (POST/PUT/DELETE) পর — পুরনো লিস্ট UI-তে ম্যানুয়ালি আপডেট করতে হয়, নইলে পুরনো ডেটা দেখাতে থাকে।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>নতুন একটা ইউজার যোগ করলে, সার্ভারে যোগ হয়ে যায় ঠিকই, কিন্তু ব্রাউজারে আগের ক্যাশ করা লিস্টে সেটা দেখাবে না — যতক্ষণ না তুমি নিজে থেকে লিস্ট রিফ্রেশ করছ।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b><code>useMutation</code> দিয়ে ডেটা বদলানো হয়, আর <code>onSuccess</code>-এ <code>invalidateQueries</code> কল করলে Tanstack Query নিজে থেকেই বুঝে যায় "এই ডেটা এখন পুরনো, নতুন করে আনো।"</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>ফর্ম সাবমিট, ডিলিট বাটন, আপডেট বাটন — যেকোনো জায়গায় সার্ভারে ডেটা পাঠানো হয়।</div>
+  </div>
+  <pre><code>import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+function AddUserForm() {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: (newUser) =&gt; axios.post("/api/users", newUser),
+    onSuccess: () =&gt; {
+      // নতুন ইউজার যোগ হওয়ার পর "users" লিস্টের ক্যাশ পুরনো বলে চিহ্নিত করো
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+    },
+  });
+
+  const handleSubmit = (e) =&gt; {
+    e.preventDefault();
+    mutation.mutate({ name: "নতুন ইউজার" });
+  };
+
+  return (
+    &lt;form onSubmit={handleSubmit}&gt;
+      &lt;button type="submit" disabled={mutation.isPending}&gt;
+        {mutation.isPending ? "যোগ হচ্ছে..." : "যোগ করো"}
+      &lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</code></pre>
+  <p class="note"><code>invalidateQueries</code> মনে রাখো — এটা বলে দেয় "এই key-র ডেটা এখন পুরনো, আবার নতুন করে fetch করো।" এটাই ম্যানুয়ালি state আপডেট করার ঝামেলা থেকে বাঁচায়।</p>
+
+  <h2>Caching ও Performance</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>একই ডেটা (যেমন ইউজার লিস্ট) যদি দুটো আলাদা কম্পোনেন্টে দরকার হয়, সাধারণ <code>useEffect</code>+axios দিয়ে করলে দুটো কম্পোনেন্টই আলাদা আলাদাভাবে API কল করে — একই ডেটা দু'বার আনা হয়, নেটওয়ার্ক আর সার্ভার রিসোর্স নষ্ট হয়।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>প্রতিটা কম্পোনেন্ট নিজের মতো করে fetch করলে, ক্যাশের কোনো "শেয়ার্ড" জায়গা না থাকায় একই কাজ বারবার হয় — সাইট স্লো হয়, সার্ভারে অতিরিক্ত লোড পড়ে।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b>Tanstack Query-তে একই <code>queryKey</code> ব্যবহার করলে, দ্বিতীয়বার API কল হয় না — ক্যাশ থেকে সাথে সাথে দেখায়, পেছন থেকে চুপচাপ নতুন ডেটা চেক করে (Stale-While-Revalidate)।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b><code>staleTime</code>, <code>gcTime</code> দিয়ে ঠিক করো কতক্ষণ ডেটা "তাজা" ধরা হবে — ঘন ঘন না বদলানো ডেটায় (যেমন ক্যাটাগরি লিস্ট) বেশি staleTime দাও, দ্রুত বদলানো ডেটায় কম।</div>
+  </div>
+  <ul>
+    <li><b>staleTime</b> — কতক্ষণ ডেটাকে "তাজা" ধরা হবে (এই সময়ে আবার fetch হবে না)।</li>
+    <li><b>cacheTime / gcTime</b> — কম্পোনেন্ট আনমাউন্ট হওয়ার পরও কতক্ষণ ক্যাশ মেমরিতে থাকবে।</li>
+    <li><b>refetchOnWindowFocus</b> — ইউজার ট্যাব বদলে ফিরে এলে অটোমেটিক রিফ্রেশ (ডিফল্টে চালু থাকে)।</li>
+  </ul>
+  <pre><code>useQuery({
+  queryKey: ["users"],
+  queryFn: fetchUsers,
+  staleTime: 1000 * 60, // ১ মিনিট পর্যন্ত ডেটা "তাজা" ধরা হবে
+});</code></pre>
+
+  <button class="done-btn ${done['m7'] ? 'on' : ''}" onclick="toggleDone('m7', this)">${done['m7'] ? '✓ কমপ্লিট করা হয়েছে' : 'এই টপিক শেষ — Done মার্ক করো'}</button>
+  <div class="nav-arrows"><a href="#" onclick="go('m6');return false;">← Module 6</a><a href="#" onclick="go('m8');return false;">পরের টপিক: Module 8 →</a></div>
+</section>
+
+<section class="topic" id="sec-m8">
+  <div class="eyebrow">Module 8 — পার্ট ১</div>
+  <h1>Next.js — React-এর "প্রোডাকশন-রেডি" বড় ভাই</h1>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>Module 2-তে React Router বসিয়ে routing পেলে ঠিকই, কিন্তু SEO (Module 8-এই পরে আসছে), প্রথম-লোড স্পিড, ইমেজ অপটিমাইজেশন, সার্ভার-সাইড রেন্ডারিং — এসবের কোনোটাই React একা দেয় না। প্রতিটার জন্য আলাদা লাইব্রেরি খুঁজে জোড়া লাগাতে হয়, আর সেটআপ ও maintain করা জটিল হয়ে যায়।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>একটা প্রোডাকশন-লেভেল ওয়েবসাইটে শুধু UI বানালেই হয় না — Google-এ পাওয়া যেতে হবে (SEO), দ্রুত লোড হতে হবে, নিরাপদ হতে হবে। React একা "library" হওয়ায় এগুলোর কোনো official, unified সমাধান দেয় না।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b>Next.js হলো সেই ফ্রেমওয়ার্ক যেটা React-এর উপর বসে routing, SSR/SSG, ইমেজ অপটিমাইজেশন, নিজস্ব API (Route Handler) — সবকিছুর রেডিমেড, official সমাধান একসাথে দেয়।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>যেকোনো প্রোডাকশন-লেভেল অ্যাপে — বিশেষত যেখানে SEO গুরুত্বপূর্ণ (ব্লগ, ই-কমার্স, মার্কেটিং সাইট) — ইন্ডাস্ট্রিতে এখন এটাই ডিফল্ট পছন্দ।</div>
+  </div>
+
+  <h2>Next.js পরিচিতি ও সেটআপ</h2>
+  <pre><code>npx create-next-app@latest my-next-app
+cd my-next-app
+npm run dev</code></pre>
+  <p>Next.js-এ ফোল্ডার স্ট্রাকচারই routing ঠিক করে দেয় (একে <b>App Router</b> বলে) — এইজন্যই এটাকে "File-based Routing" বলা হয়।</p>
+
+  <h2>Routing ও Navigation</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>React Router (Module 2)-এ প্রতিটা রুট নিজে হাতে ডিক্লেয়ার করতে হতো — <code>&lt;Route path="/about"&gt;</code>, আলাদা লাইব্রেরি ইনস্টল করতে হতো।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>বড় অ্যাপে অনেক রুট থাকলে সব <code>&lt;Route&gt;</code> এক জায়গায় ম্যানেজ করা, নেস্টেড রুট সামলানো জটিল হয়ে যায়।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b>Next.js-এ ফোল্ডার স্ট্রাকচারই routing ঠিক করে দেয় (<b>App Router</b>) — কোনো রুট কনফিগারেশন লেখার দরকারই নেই, শুধু ফোল্ডার বানালেই রুট তৈরি!</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>Next.js-এর প্রতিটা প্রজেক্টেই এটা ডিফল্ট পদ্ধতি — নিচে দেখো।</div>
+  </div>
+  <p><code>app</code> ফোল্ডারের ভেতর প্রতিটা ফোল্ডার একটা করে রুট। কোনো <code>react-router-dom</code> ইনস্টল করার দরকার নেই!</p>
+  <pre><code>app/
+ ├─ page.js          → রুট "/"
+ ├─ about/
+ │   └─ page.js      → রুট "/about"
+ └─ product/
+     └─ [id]/
+         └─ page.js  → রুট "/product/45" (ডাইনামিক)</code></pre>
+  <pre><code>// app/product/[id]/page.js
+export default function Product({ params }) {
+  return &lt;h2&gt;প্রোডাক্ট নং {params.id}&lt;/h2&gt;;
+}</code></pre>
+  <p>পেজ বদলানোর জন্য <code>&lt;a&gt;</code> নয়, <code>Link</code> ব্যবহার করো — এটা পুরো পেজ রিলোড না করে শুধু দরকারি অংশ বদলায়।</p>
+  <pre><code>import Link from "next/link";
+&lt;Link href="/about"&gt;আমাদের সম্পর্কে&lt;/Link&gt;</code></pre>
+
+  <h2>Style ও UI</h2>
+  <p>React-এ যেভাবে Tailwind/CSS ব্যবহার করেছিলে (Module 1), Next.js-এও একই নিয়ম — শুধু সেটআপ এখন <code>create-next-app</code> চালানোর সময়েই বেছে নেওয়া যায়। এছাড়া Next.js নিজস্ব <b>CSS Modules</b> সাপোর্ট করে যাতে স্টাইল একটা কম্পোনেন্টেই আটকে থাকে, অন্য কম্পোনেন্টে "লিক" না করে।</p>
+  <pre><code>/* Button.module.css */
+.btn { background: teal; color: white; }
+
+// Button.jsx
+import styles from "./Button.module.css";
+&lt;button className={styles.btn}&gt;ক্লিক করো&lt;/button&gt;</code></pre>
+
+  <h2>Optimization — Image ও Font</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>সাধারণ <code>&lt;img&gt;</code> ট্যাগে একটা বড়, আনঅপ্টিমাইজড ছবি দিলে, সেটার আসল সাইজেই ডাউনলোড হয় — মোবাইলে ছোট দেখানোর দরকার হলেও বড় ছবিটাই লোড হয়, সাইট স্লো হয়ে যায়।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>ছবি সাধারণত একটা ওয়েবপেজের সবচেয়ে ভারী অংশ — ম্যানুয়ালি প্রতিটা ছবি resize, compress, সঠিক ফরম্যাটে (WebP) কনভার্ট করা প্রতিটা ডেভেলপারের পক্ষে সময়সাপেক্ষ।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b>Next.js-এর <code>Image</code> কম্পোনেন্ট অটোমেটিক ছবি রিসাইজ, lazy-load (স্ক্রিনে আসার আগে লোড হয় না), আর সঠিক ফরম্যাটে কনভার্ট করে দেয় — কোনো এক্সট্রা কোড ছাড়াই।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>পেজের প্রতিটা ছবিতে — সাধারণ <code>&lt;img&gt;</code>-এর বদলে সবসময় <code>next/image</code>-এর <code>Image</code> ব্যবহার করো।</div>
+  </div>
+  <pre><code>import Image from "next/image";
+&lt;Image src="/banner.jpg" width={800} height={400} alt="ব্যানার" /&gt;</code></pre>
+
+  <h2>Data Fetching — SSG, SSR, CSR, ISR</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>Module 7-এ শেখা <code>useQuery</code> ব্রাউজারে গিয়ে ডেটা আনে (CSR) — কিন্তু এতে Google-এর বট প্রথমে খালি পেজ দেখে (SEO সমস্যা), আর ইউজারও প্রথমে একটা "লোডিং" স্পিনার দেখে, তারপর কনটেন্ট আসে (স্লো মনে হয়)।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>সব ধরনের পেজের জন্য একই পদ্ধতি ঠিক না — ব্লগ পোস্ট (কম বদলায়) আর লগইন ড্যাশবোর্ড (প্রতি মুহূর্তে বদলায়)-এর ডেটা আনার সেরা পদ্ধতি আলাদা হওয়া উচিত।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b>Next.js ৪টা ভিন্ন পদ্ধতি দেয় — কখন, কোথায় (সার্ভারে না ব্রাউজারে) ডেটা আনা হচ্ছে তার ভিত্তিতে — যাতে প্রতিটা পেজের জন্য সবচেয়ে উপযুক্তটা বেছে নেওয়া যায়।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>নিচের প্রতিটা পদ্ধতির নিজস্ব ব্যবহারের জায়গা আছে — একটা রেস্টুরেন্টের সাথে তুলনা করে বুঝি।</div>
+  </div>
+  <ul>
+    <li><b>SSG (Static Site Generation)</b> — খাবার আগে থেকেই রান্না করে র‍্যাকে সাজানো (Build করার সময় HTML বানিয়ে রাখা)। ব্লগ, ডকুমেন্টেশনের জন্য দারুণ — সবচেয়ে দ্রুত।</li>
+    <li><b>SSR (Server-Side Rendering)</b> — প্রতিটা অর্ডারেই নতুন করে রান্না (প্রতিবার রিকোয়েস্টে সার্ভারে HTML বানানো)। যে ডেটা প্রতি মুহূর্তে বদলায় (যেমন লগইন ড্যাশবোর্ড), তার জন্য দরকার।</li>
+    <li><b>ISR (Incremental Static Regeneration)</b> — আগে থেকে রান্না করা, কিন্তু একটা নির্দিষ্ট সময় পর পর আবার তাজা করে দেওয়া। খবরের সাইট, প্রোডাক্ট লিস্টিং-এর জন্য সেরা।</li>
+    <li><b>CSR (Client-Side Rendering)</b> — টেবিলেই বসে নিজে রান্না করা (ব্রাউজারে গিয়ে <code>useEffect</code>/Tanstack Query দিয়ে ডেটা আনা, Module 7-এ যা শিখেছ)। ড্যাশবোর্ড, লগইন-পরবর্তী পেজের জন্য ব্যবহার হয়।</li>
+  </ul>
+  <pre><code>// SSG / ISR — এই ফাংশন Build সময়ে (বা নির্দিষ্ট সময় পরপর) রান হয়
+export async function generateStaticParams() { /* ... */ }
+
+async function getData() {
+  const res = await fetch("https://api.example.com/posts", {
+    next: { revalidate: 60 }, // ৬০ সেকেন্ড পরপর ISR দিয়ে রিফ্রেশ হবে
+  });
+  return res.json();
+}
+
+export default async function Page() {
+  const posts = await getData(); // Server Component-এই সরাসরি await!
+  return &lt;PostList posts={posts} /&gt;;
+}</code></pre>
+  <p class="note">Next.js App Router-এ কম্পোনেন্ট ডিফল্টভাবে <b>Server Component</b> — মানে সরাসরি <code>await fetch()</code> লেখা যায়, কোনো <code>useEffect</code> লাগে না! ব্রাউজারে ইন্টার‍্যাক্টিভিটি (useState, onClick) দরকার হলে ফাইলের উপরে <code>"use client"</code> লিখতে হয়।</p>
+  <pre><code>"use client"; // এটা লিখলে তবেই useState/onClick কাজ করবে
+import { useState } from "react";</code></pre>
+
+  <h2>Middleware / Proxy Concept</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>Module 8-এর প্রজেক্টে (Authentication) লগইন না করা ইউজার যদি সরাসরি <code>/dashboard</code> URL টাইপ করে, পেজ প্রথমে লোড হয়ে যাবে, তারপর হয়তো ক্লায়েন্ট-সাইড কোড চেক করে রিডাইরেক্ট করবে — ততক্ষণে ইউজার এক সেকেন্ডের জন্য হলেও পেজটা দেখে ফেলবে।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>ক্লায়েন্ট-সাইডে (ব্রাউজারে) চেক করলে, পেজের কোড আগেই ডাউনলোড ও রেন্ডার হয়ে যায় — নিরাপত্তার জন্য এটা যথেষ্ট নয়।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b>Middleware একজন "দারোয়ান" — রিকোয়েস্ট আসল পেজে পৌঁছানোর <b>আগেই</b> সার্ভারে চেক করে। Module 3-এর axios interceptor মনে আছে? এটা তার সার্ভার-সাইড ভার্সন।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>Authentication চেক, নির্দিষ্ট দেশ/ভাষা অনুযায়ী রিডাইরেক্ট, বা কোনো রুটে অ্যাক্সেস কন্ট্রোল — যেখানেই পেজ লোড হওয়ার আগে একটা "যাচাই" দরকার।</div>
+  </div>
+  <pre><code>// middleware.js (রুট ফোল্ডারে)
+import { NextResponse } from "next/server";
+
+export function middleware(request) {
+  const token = request.cookies.get("token");
+  if (!token && request.nextUrl.pathname.startsWith("/dashboard")) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+  return NextResponse.next();
+}
+
+export const config = { matcher: ["/dashboard/:path*"] };</code></pre>
+  <p class="note">এভাবে লগইন না করা ইউজার <code>/dashboard</code>-এ ঢুকতে চাইলেই, পেজ লোড হওয়ার আগেই সরাসরি লগইন পেজে পাঠিয়ে দেওয়া যায়।</p>
+
+  <button class="done-btn ${done['m8'] ? 'on' : ''}" onclick="toggleDone('m8', this)">${done['m8'] ? '✓ কমপ্লিট করা হয়েছে' : 'এই টপিক শেষ — Done মার্ক করো'}</button>
+  <div class="nav-arrows"><a href="#" onclick="go('m7');return false;">← Module 7</a><a href="#" onclick="go('m8b');return false;">পরের টপিক: Module 8 (পার্ট ২) →</a></div>
+</section>
+
+<section class="topic" id="sec-m8b">
+  <div class="eyebrow">Module 8 — পার্ট ২</div>
+  <h1>Authentication, CRUD প্রজেক্ট ও SEO</h1>
+  <div class="mentor">এবার হাতে-কলমে দুটো ছোট real-world প্রজেক্ট বানাবো Next.js দিয়ে — একটা লগইন সিস্টেম, একটা CRUD (Create-Read-Update-Delete) অ্যাপ। ধাপে ধাপে করো।</div>
+
+  <h2>প্রজেক্ট ১ — Authentication (লগইন সিস্টেম)</h2>
+  <p><b>ধাপ ১ — Route Handler বানাও</b> (Next.js-এ এভাবেই নিজের API বানানো হয়, আলাদা ব্যাকএন্ড সার্ভার ছাড়াই):</p>
+  <pre><code>// app/api/login/route.js
+import { NextResponse } from "next/server";
+
+export async function POST(request) {
+  const { email, password } = await request.json();
+
+  // (বাস্তবে এখানে database চেক হবে)
+  if (email === "test@mail.com" && password === "1234") {
+    const response = NextResponse.json({ success: true });
+    response.cookies.set("token", "fake-jwt-token", { httpOnly: true });
+    return response;
+  }
+  return NextResponse.json({ success: false }, { status: 401 });
+}</code></pre>
+
+  <p><b>ধাপ ২ — লগইন ফর্ম (Client Component)</b>:</p>
+  <pre><code>"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
+
+  const handleLogin = async (e) =&gt; {
+    e.preventDefault();
+    const res = await fetch("/api/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
+    if (res.ok) router.push("/dashboard");
+    else alert("ভুল ইমেইল বা পাসওয়ার্ড");
+  };
+
+  return (
+    &lt;form onSubmit={handleLogin}&gt;
+      &lt;input onChange={(e) =&gt; setEmail(e.target.value)} placeholder="ইমেইল" /&gt;
+      &lt;input type="password" onChange={(e) =&gt; setPassword(e.target.value)} placeholder="পাসওয়ার্ড" /&gt;
+      &lt;button type="submit"&gt;লগইন&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</code></pre>
+  <p class="note">এই <code>/dashboard</code> রুটটাকেই Module 8 পার্ট ১-এর <b>middleware</b> দিয়ে সুরক্ষিত রাখবে — টোকেন ছাড়া কেউ ঢুকতে পারবে না।</p>
+
+  <h2>প্রজেক্ট ২ — CRUD অ্যাপ (একটা "Task" ম্যানেজার)</h2>
+  <p><b>ধাপ ১ — সব Task দেখানো (Read) + নতুন Task যোগ করা (Create)</b>, Module 7-এর Tanstack Query ব্যবহার করে:</p>
+  <pre><code>// app/tasks/page.js
+"use client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
+export default function TasksPage() {
+  const queryClient = useQueryClient();
+
+  const { data: tasks } = useQuery({
+    queryKey: ["tasks"],
+    queryFn: () =&gt; fetch("/api/tasks").then((r) =&gt; r.json()),
+  });
+
+  const addTask = useMutation({
+    mutationFn: (title) =&gt;
+      fetch("/api/tasks", { method: "POST", body: JSON.stringify({ title }) }),
+    onSuccess: () =&gt; queryClient.invalidateQueries({ queryKey: ["tasks"] }),
+  });
+
+  const deleteTask = useMutation({
+    mutationFn: (id) =&gt; fetch("/api/tasks/" + id, { method: "DELETE" }),
+    onSuccess: () =&gt; queryClient.invalidateQueries({ queryKey: ["tasks"] }),
+  });
+
+  return (
+    &lt;div&gt;
+      {tasks?.map((t) =&gt; (
+        &lt;div key={t.id}&gt;
+          {t.title}
+          &lt;button onClick={() =&gt; deleteTask.mutate(t.id)}&gt;ডিলিট&lt;/button&gt;
+        &lt;/div&gt;
+      ))}
+      &lt;button onClick={() =&gt; addTask.mutate("নতুন কাজ")}&gt;যোগ করো&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+  <p><b>ধাপ ২ — Route Handler গুলো (সার্ভার সাইড)</b>:</p>
+  <pre><code>// app/api/tasks/route.js
+let tasks = [{ id: 1, title: "React শেষ করো" }]; // (বাস্তবে database হবে)
+
+export async function GET() {
+  return Response.json(tasks);
+}
+export async function POST(request) {
+  const { title } = await request.json();
+  const newTask = { id: Date.now(), title };
+  tasks.push(newTask);
+  return Response.json(newTask);
+}
+
+// app/api/tasks/[id]/route.js
+export async function DELETE(request, { params }) {
+  tasks = tasks.filter((t) =&gt; t.id !== Number(params.id));
+  return Response.json({ success: true });
+}</code></pre>
+  <p class="note">লক্ষ্য করো — Create, Read, Update, Delete (CRUD)-এর প্রতিটার জন্য একটা করে HTTP method (<code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>DELETE</code>) — এটাই REST API-র মূল নিয়ম। Update (<code>PUT</code>) একই প্যাটার্নে <code>DELETE</code>-এর মতো করেই বানানো যায়, নিজে try করো।</p>
+
+  <h2>SEO Concept — Next.js কেন Google-এ ভালো র‍্যাংক করে</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>সাধারণ React অ্যাপ (CSR) প্রথমে প্রায় খালি একটা HTML পাঠায়, তারপর JS দিয়ে কনটেন্ট বসায় — Google-এর বট মাঝে মাঝে এই "পরে বসানো" কনটেন্ট ঠিকমতো পড়তে পারে না, ফলে সার্চ র‍্যাংকিং খারাপ হয়।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>সার্চ ইঞ্জিন পেজের HTML স্ক্যান করে বোঝে পেজটা কী নিয়ে — যদি HTML-এ আসল কনটেন্ট না থাকে (শুধু একটা খালি <code>&lt;div id="root"&gt;</code>), Google বুঝতে পারে না পেজে কী আছে।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b>Next.js Server Component-এই HTML বানিয়ে পাঠায় (SSR/SSG, Module 8 পার্ট ১) — তাই Google প্রথম থেকেই পুরো কনটেন্ট দেখতে পায়। এছাড়া <code>generateMetadata</code> দিয়ে প্রতিটা পেজের title/description আলাদা করে সেট করা যায়।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>ব্লগ, ই-কমার্স প্রোডাক্ট পেজ, মার্কেটিং পেজ — যেকোনো পেজ যেটা Google সার্চে পাওয়া যাওয়া দরকার।</div>
+  </div>
+  <pre><code>// app/blog/[slug]/page.js
+export async function generateMetadata({ params }) {
+  const post = await getPost(params.slug);
+  return {
+    title: post.title,
+    description: post.summary,
+    openGraph: { images: [post.coverImage] }, // ফেসবুক/লিংকডইনে শেয়ার করলে প্রিভিউ দেখাবে
+  };
+}
+
+export default async function BlogPost({ params }) {
+  const post = await getPost(params.slug);
+  return &lt;article&gt;&lt;h1&gt;{post.title}&lt;/h1&gt;&lt;/article&gt;;
+}</code></pre>
+  <p class="note"><code>generateMetadata</code> প্রতিটা পেজের জন্য আলাদা title/description বানিয়ে দেয় — যা Google সার্চ রেজাল্টে দেখা যায়। এটাই Next.js-কে industry-তে blog, e-commerce, marketing সাইটের জন্য প্রথম পছন্দ করে তুলেছে।</p>
+
+  <button class="done-btn ${done['m8b'] ? 'on' : ''}" onclick="toggleDone('m8b', this)">${done['m8b'] ? '✓ কমপ্লিট করা হয়েছে' : 'এই টপিক শেষ — Done মার্ক করো'}</button>
+  <div class="nav-arrows"><a href="#" onclick="go('m8');return false;">← Module 8 (পার্ট ১)</a><a href="#" onclick="go('m9');return false;">পরের টপিক: Module 9 →</a></div>
+</section>
+
+<section class="topic" id="sec-m9">
+  <div class="eyebrow">Module 9</div>
+  <h1>AI ইন্টিগ্রেশন — Text Generation ও Chatbot</h1>
+  <div class="mentor">এতদিন যা শিখলে, তার সবকিছু এখানে একসাথে ব্যবহার হবে — Next.js-এর Route Handler (Module 8), state (useState), আর streaming ডেটা হ্যান্ডলিং। লক্ষ্য: নিজের ওয়েবসাইটে একটা AI চ্যাটবট বসানো।</div>
+
+  <h2>নিরাপত্তার নিয়ম — API Key কখনো ব্রাউজারে নয়</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>ধরো তুমি সরাসরি React কম্পোনেন্টে AI প্রোভাইডারের (OpenAI, Anthropic) API key বসিয়ে দিলে — যে কেউ ব্রাউজারের DevTools খুলে "Sources" ট্যাবে গিয়ে তোমার key দেখে নিতে পারবে, আর সেটা দিয়ে নিজের কাজে ব্যবহার করে তোমার বিল বাড়িয়ে দিতে পারবে।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>ব্রাউজারে পাঠানো যেকোনো কোড (JS ফাইল সহ) ইউজারের কম্পিউটারে ডাউনলোড হয়ে যায় — তাই সেখানে যা কিছু লেখা থাকে, সবই দেখা যায়, লুকানো যায় না।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b>API key সবসময় সার্ভারে রাখো (Next.js-এর Route Handler-এ, <code>.env.local</code> ফাইলে) — ব্রাউজার শুধু তোমার নিজের সার্ভারকে কল করবে, আর তোমার সার্ভার (যেটা ইউজারের চোখের আড়ালে থাকে) আসল AI প্রোভাইডারকে কল করবে।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>যেকোনো থার্ড-পার্টি API key (AI, পেমেন্ট গেটওয়ে, ইমেইল সার্ভিস) — সবসময় সার্ভার-সাইড কোডে রাখো, কখনো ক্লায়েন্ট কম্পোনেন্টে নয়।</div>
+  </div>
+  <pre><code>// .env.local  (এই ফাইল কখনো গিটে পুশ কোরো না)
+OPENAI_API_KEY=sk-xxxxxxxx</code></pre>
+
+  <h2>Text Generation — বেসিক API রুট</h2>
+  <pre><code>// app/api/generate/route.js
+export async function POST(request) {
+  const { prompt } = await request.json();
+
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + process.env.OPENAI_API_KEY,
+    },
+    body: JSON.stringify({
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: prompt }],
+    }),
+  });
+
+  const data = await res.json();
+  return Response.json({ text: data.choices[0].message.content });
+}</code></pre>
+  <pre><code>// Client Component
+"use client";
+import { useState } from "react";
+
+export default function Generator() {
+  const [prompt, setPrompt] = useState("");
+  const [result, setResult] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleGenerate = async () =&gt; {
+    setLoading(true);
+    const res = await fetch("/api/generate", {
+      method: "POST",
+      body: JSON.stringify({ prompt }),
+    });
+    const data = await res.json();
+    setResult(data.text);
+    setLoading(false);
+  };
+
+  return (
+    &lt;div&gt;
+      &lt;textarea value={prompt} onChange={(e) =&gt; setPrompt(e.target.value)} /&gt;
+      &lt;button onClick={handleGenerate} disabled={loading}&gt;
+        {loading ? "লেখা হচ্ছে..." : "জেনারেট করো"}
+      &lt;/button&gt;
+      &lt;p&gt;{result}&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+
+  <h2>Chatbot বানানো — কথোপকথনের "মেমরি" রাখা</h2>
+  <div class="flow-box">
+    <div class="flow-row problem"><b>🔴 সমস্যা ছিল</b>শুধু আগের "Text Generation" পদ্ধতি (একবার প্রশ্ন, একবার উত্তর) দিয়ে চ্যাট বানালে, বটকে দ্বিতীয় প্রশ্ন করলে সে প্রথম প্রশ্নের কথা মনেই রাখবে না — প্রতিটা মেসেজ যেন সম্পূর্ণ নতুন কথোপকথন।</div>
+    <div class="flow-row why"><b>❓ কেন এই সমস্যা</b>AI মডেলের নিজের কোনো "মেমরি" নেই — প্রতিটা রিকোয়েস্ট আলাদা, স্বাধীন। আগের কথা মনে রাখতে হলে, প্রতিবার পুরো কথোপকথনের ইতিহাসটাই আবার পাঠাতে হয়।</div>
+    <div class="flow-row fix"><b>✅ সমাধান</b>একটা <code>messages</code> array-এ পুরো কথোপকথন (কে কী বলল) state-এ রাখো, আর প্রতিবার নতুন মেসেজ পাঠানোর সময় পুরো array-টাই সার্ভারে পাঠাও — এভাবে AI প্রতিবার পুরো প্রসঙ্গ (context) পায়।</div>
+    <div class="flow-row where"><b>📍 কোথায় / কীভাবে</b>যেকোনো চ্যাটবট, কাস্টমার সাপোর্ট বট, বা AI অ্যাসিস্ট্যান্ট ফিচারে যেখানে আগের কথার প্রসঙ্গ দরকার।</div>
+  </div>
+  <pre><code>"use client";
+import { useState } from "react";
+
+export default function Chatbot() {
+  const [messages, setMessages] = useState([]); // [{role:"user",content:""}, {role:"assistant",content:""}]
+  const [input, setInput] = useState("");
+
+  const sendMessage = async () =&gt; {
+    const newMessages = [...messages, { role: "user", content: input }];
+    setMessages(newMessages);
+    setInput("");
+
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      body: JSON.stringify({ messages: newMessages }), // পুরো হিস্ট্রি পাঠানো হচ্ছে
+    });
+    const data = await res.json();
+    setMessages([...newMessages, { role: "assistant", content: data.reply }]);
+  };
+
+  return (
+    &lt;div&gt;
+      {messages.map((m, i) =&gt; (
+        &lt;p key={i}&gt;&lt;b&gt;{m.role === "user" ? "তুমি" : "বট"}:&lt;/b&gt; {m.content}&lt;/p&gt;
+      ))}
+      &lt;input value={input} onChange={(e) =&gt; setInput(e.target.value)} /&gt;
+      &lt;button onClick={sendMessage}&gt;পাঠাও&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+  <pre><code>// app/api/chat/route.js
+export async function POST(request) {
+  const { messages } = await request.json();
+
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + process.env.OPENAI_API_KEY,
+    },
+    body: JSON.stringify({ model: "gpt-4o-mini", messages }),
+  });
+
+  const data = await res.json();
+  return Response.json({ reply: data.choices[0].message.content });
+}</code></pre>
+  <p class="note">প্রোডাকশনে এই চ্যাট state আসলে Zustand বা Redux-এ (Module 5, 6) রাখা ভালো, যাতে পেজ বদলালেও কথোপকথন হারিয়ে না যায়। আর real chatbot-এ উত্তর একসাথে না দেখিয়ে, শব্দ-শব্দ করে "স্ট্রিম" করে দেখানো হয় (ChatGPT-র মতো) — এর জন্য Server-Sent Events বা streaming response ব্যবহার হয়, যেটা এই বেসিক ধারণার উপরেই তৈরি।</p>
+
+  <button class="done-btn ${done['m9'] ? 'on' : ''}" onclick="toggleDone('m9', this)">${done['m9'] ? '✓ কমপ্লিট করা হয়েছে' : 'এই টপিক শেষ — Done মার্ক করো'}</button>
+  <div class="nav-arrows"><a href="#" onclick="go('m8b');return false;">← Module 8 (পার্ট ২)</a><a href="#" onclick="go('m10');return false;">পরের টপিক: Module 10 (ফাইনাল প্রজেক্ট) →</a></div>
+</section>
+
+<section class="topic" id="sec-m10">
+  <div class="eyebrow">Module 10 — ফাইনাল প্রজেক্ট</div>
+  <h1>"TaskFlow" — একটা পূর্ণাঙ্গ Industry-Level অ্যাপ</h1>
+  <div class="mentor">অভিনন্দন, তুমি এতদূর এসে গেছো! এবার একটা মাত্র প্রজেক্টে ৯টা Module-এর সব কিছু একসাথে জোড়া লাগাবে — এটাই আসল ইন্ডাস্ট্রি-লেভেল কাজের অভিজ্ঞতা দেবে। প্রজেক্ট: একটা টিম টাস্ক-ম্যানেজার, যেখানে লগইন করা যাবে, টাস্ক তৈরি/এডিট/ডিলিট করা যাবে, আর একটা AI অ্যাসিস্ট্যান্ট টাস্ক লিখতে সাহায্য করবে।</div>
+
+  <h2>আর্কিটেকচার — কোন Module কোথায় লাগবে</h2>
+  <ul>
+    <li><b>Next.js (Module 8)</b> — পুরো অ্যাপের কাঠামো, routing, Route Handler দিয়ে নিজস্ব API।</li>
+    <li><b>Middleware (Module 8)</b> — লগইন ছাড়া <code>/dashboard</code>-এ ঢোকা আটকানো।</li>
+    <li><b>Zustand (Module 6)</b> — লগইন ইউজারের তথ্য (যেমন নাম, থিম) গ্লোবালি রাখা।</li>
+    <li><b>Tanstack Query (Module 7)</b> — টাস্ক লিস্ট আনা, তৈরি/ডিলিট করা, ক্যাশিং।</li>
+    <li><b>React Hook Form + Yup (Module 2)</b> — টাস্ক ফর্ম, সাইনআপ ফর্ম ভ্যালিডেশন।</li>
+    <li><b>AI Chatbot (Module 9)</b> — "আমাকে একটা টাস্কের বর্ণনা লিখে দাও" — সহায়ক অ্যাসিস্ট্যান্ট।</li>
+  </ul>
+
+  <h2>ফোল্ডার স্ট্রাকচার</h2>
+  <pre><code>app/
+ ├─ login/page.js              → লগইন পেজ
+ ├─ dashboard/
+ │   ├─ page.js                 → টাস্ক লিস্ট (Server Component)
+ │   └─ TaskBoard.jsx            → ক্লায়েন্ট UI (Zustand + Tanstack Query)
+ ├─ api/
+ │   ├─ login/route.js
+ │   ├─ tasks/route.js           → GET, POST
+ │   ├─ tasks/[id]/route.js      → PUT, DELETE
+ │   └─ chat/route.js            → AI অ্যাসিস্ট্যান্ট
+ ├─ middleware.js
+store/
+ └─ useUserStore.js              → Zustand দিয়ে ইউজার state</code></pre>
+
+  <h2>ধাপে ধাপে বিল্ড প্ল্যান</h2>
+  <p><b>ধাপ ১ — Auth ফ্লো:</b> Module 8 (পার্ট ২)-এর <code>/api/login</code> কোডটা বসাও, cookie-তে token সেট করো, আর Module 8 (পার্ট ১)-এর middleware কোড বসিয়ে <code>/dashboard</code> সুরক্ষিত করো।</p>
+  <p><b>ধাপ ২ — ইউজার State:</b> Module 6-এর মতো একটা Zustand store বানাও, যেখানে লগইন করা ইউজারের নাম/ইমেইল থাকবে — যাতে <code>Navbar</code>, <code>Dashboard</code> সব জায়গা থেকে সরাসরি অ্যাক্সেস করা যায়।</p>
+  <pre><code>// store/useUserStore.js
+import { create } from "zustand";
+
+const useUserStore = create((set) =&gt; ({
+  user: null,
+  setUser: (user) =&gt; set({ user }),
+  logout: () =&gt; set({ user: null }),
+}));
+export default useUserStore;</code></pre>
+
+  <p><b>ধাপ ৩ — টাস্ক CRUD:</b> Module 8 (পার্ট ২)-এর <code>/api/tasks</code> রুটগুলো বসাও, তারপর Module 7-এর useQuery/useMutation দিয়ে ফ্রন্টএন্ড জোড়া দাও।</p>
+  <pre><code>// app/dashboard/TaskBoard.jsx
+"use client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+
+export default function TaskBoard() {
+  const queryClient = useQueryClient();
+  const { register, handleSubmit, reset } = useForm();
+
+  const { data: tasks } = useQuery({
+    queryKey: ["tasks"],
+    queryFn: () =&gt; fetch("/api/tasks").then((r) =&gt; r.json()),
+  });
+
+  const createTask = useMutation({
+    mutationFn: (task) =&gt;
+      fetch("/api/tasks", { method: "POST", body: JSON.stringify(task) }),
+    onSuccess: () =&gt; {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      reset();
+    },
+  });
+
+  return (
+    &lt;div&gt;
+      &lt;form onSubmit={handleSubmit((data) =&gt; createTask.mutate(data))}&gt;
+        &lt;input {...register("title", { required: true })} placeholder="নতুন টাস্ক" /&gt;
+        &lt;button type="submit"&gt;যোগ করো&lt;/button&gt;
+      &lt;/form&gt;
+      {tasks?.map((t) =&gt; &lt;p key={t.id}&gt;{t.title}&lt;/p&gt;)}
+    &lt;/div&gt;
+  );
+}</code></pre>
+
+  <p><b>ধাপ ৪ — AI অ্যাসিস্ট্যান্ট জোড়া দাও:</b> Module 9-এর <code>/api/chat</code> রুট বসাও, আর <code>TaskBoard</code>-এ একটা ছোট "AI দিয়ে লিখে দাও" বাটন বসাও যেটা ইউজারের ছোট্ট আইডিয়া থেকে পুরো টাস্ক-বর্ণনা জেনারেট করে input-এ বসিয়ে দেবে।</p>
+
+  <h2>এরপর কী করবে — Production-এর দিকে এগোনো</h2>
+  <ul>
+    <li>আসল ডেটাবেস জোড়া দাও (Postgres/MongoDB) — এতক্ষণ যে <code>let tasks = [...]</code> ব্যবহার হয়েছে সেটা শুধু শেখার জন্য, প্রোডাকশনে ডেটা সার্ভার রিস্টার্টেই হারিয়ে যাবে।</li>
+    <li>Vercel-এ ডিপ্লয় করো — Next.js অ্যাপের জন্য সবচেয়ে সহজ, এক ক্লিকেই SSR/ISR সব কাজ করবে।</li>
+    <li>Password হ্যাশ করো (bcrypt) আর real JWT ব্যবহার করো — Module 8-এ "fake-jwt-token" শুধু ধারণা বোঝানোর জন্য ছিল।</li>
+    <li>প্রতিটা Module আবার ফিরে দেখো, আর নিজে থেকে ছোট ছোট বদল করে দেখো (যেমন Redux দিয়ে একই প্রজেক্ট বানিয়ে Zustand-এর সাথে তুলনা করো)।</li>
+  </ul>
+
+  <div class="mentor">এই দিয়েই পুরো "ReactJs and NextJs" কারিকুলামের সবকটা টপিক কভার হয়ে গেলো — ভূমিকা থেকে শুরু করে Module 1 থেকে Module 10 পর্যন্ত। এখন থেকে চর্চাই তোমাকে ইন্ডাস্ট্রি-লেভেল বানাবে — যত বেশি নিজে হাতে কোড করবে, তত পাকাপোক্ত হবে।</div>
+
+  <button class="done-btn ${done['m10'] ? 'on' : ''}" onclick="toggleDone('m10', this)">${done['m10'] ? '✓ কমপ্লিট করা হয়েছে' : 'এই টপিক শেষ — Done মার্ক করো'}</button>
+  <div class="nav-arrows"><a href="#" onclick="go('m9');return false;">← Module 9</a><span class="note">🎉 পুরো কোর্স সম্পূর্ণ!</span></div>
+</section>
+`;
+    markActive('intro');
+  </script>
+</body>
+
+</html>
